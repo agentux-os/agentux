@@ -18,10 +18,10 @@ Agents run commands on the machine. A broken package, a bad config change or a r
 - **Base: Fedora Atomic, built with [bootc](https://containers.github.io/bootc/).** The whole OS is defined in a `Containerfile` in `agentux-os`, built by CI into an OCI image, and turned into an installable ISO with `bootc-image-builder`. This is the approach Universal Blue (Bluefin, Bazzite) uses to run downstream distributions with small teams.
 - **Immutable system, image-based updates.** `/usr` is read-only; updates are atomic and the previous image stays bootable. If an agent breaks something, rollback is one command or one boot menu entry.
 - **Desktop: KDE Plasma on Wayland** for the first release. It is familiar to people coming from Windows or macOS and supports tiling layouts that suit watching several agents at once. A Hyprland variant can be published later as a second image from the same Containerfile.
-- **Preinstalled:**
-  - Harness CLIs: Claude Code, Codex, OpenCode, Antigravity CLI.
+- **In the image:**
   - AgentUX: `agentuxd`, the `aux` CLI and the cockpit (see [0004](0004-unified-interface-and-agent-bus.md)).
-  - Toolchain: `git`, `gh`, `mise`, `uv`, `bun`, `ripgrep`, `fd`, `ast-grep`, `jq`, `yq`, `bat`, `delta`, `lazygit`, `just`, Podman.
+  - System toolchain: `git`, `gh`, `mise`, `uv`, Node.js, `ripgrep`, `fd`, `jq`, `bat`, `delta`, `just`, Podman, Distrobox.
+- **Installed per user on first login:** the harness CLIs (Claude Code, Codex, OpenCode, Antigravity CLI) and fast-moving tools (`bun`, `lazygit`, `ast-grep`, `yq`). Harness CLIs ship updates weekly or faster and update themselves; baking them into a read-only `/usr` would pin users to stale versions between image builds.
 - **Language runtimes are per project** through `mise` and dev containers, not baked into the image. This keeps the image small and lets every project pin its own versions.
 - **AgentUX components are ordinary Linux packages.** `agentuxd`, `aux` and the cockpit are developed and tested on any Linux, including WSL and VMs, and the image installs them. The distribution adds integration, not hidden logic.
 
