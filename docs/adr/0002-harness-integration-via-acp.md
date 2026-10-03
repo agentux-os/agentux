@@ -21,7 +21,7 @@ Desktop apps (Claude Desktop, the Codex app, the Antigravity app) cannot be embe
    - Codex: `codex exec --json`.
    - OpenCode: `opencode serve` (HTTP API).
 3. **Antigravity CLI (`agy`) is experimental.** Its print mode hangs without a TTY (google-antigravity/antigravity-cli#318). It is supported once ACP or a working headless mode is available.
-4. **MCP is for tools, not control.** AgentUX may expose MCP servers to harnesses (run status, cross-agent notes, approval requests), but harnesses keep their own built-in tools.
+4. **MCP is for tools, not control.** AgentUX exposes its agent bus to harnesses as an MCP server ([0004](0004-unified-interface-and-agent-bus.md)), but harnesses keep their own built-in tools.
 5. **Credentials stay with the user.** Each harness uses the login or API key the user configured for it. AgentUX does not pool, share or proxy credentials, and does not route around any vendor's terms of use.
 
 ## Consequences
