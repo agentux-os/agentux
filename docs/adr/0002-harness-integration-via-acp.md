@@ -1,6 +1,6 @@
 # 0002. Integrate harnesses through ACP, with headless CLIs as fallback
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-03
 
 ## Context

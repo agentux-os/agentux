@@ -1,6 +1,6 @@
 # 0004. Unified interface over existing CLIs, and an agent bus so they talk to each other
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-03
 
 ## Context

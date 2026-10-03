@@ -1,6 +1,6 @@
 # 0003. Start with an embedded state machine, not Temporal
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-03
 
 ## Context

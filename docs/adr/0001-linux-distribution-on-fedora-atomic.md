@@ -1,6 +1,6 @@
 # 0001. AgentUX is a Linux distribution, built as a bootc image on Fedora Atomic
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-03
 
 ## Context
