@@ -1,6 +1,6 @@
 # 0005. Pipelines are declared in `agentux.yaml`
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-03
 
 ## Context
