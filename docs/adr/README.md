@@ -9,6 +9,6 @@ Each ADR records one decision: the context, what was decided, and what it costs.
 | [0003](0003-workflow-engine.md) | Start with an embedded state machine, not Temporal | Accepted |
 | [0004](0004-unified-interface-and-agent-bus.md) | Unified interface over existing CLIs, and an agent bus so they talk to each other | Accepted |
 | [0005](0005-agentux-yaml.md) | Pipelines are declared in `agentux.yaml` | Accepted |
-| [0006](0006-rust-and-tauri.md) | Rust for agentuxd and aux; Tauri 2 with React and TypeScript for the cockpit | Proposed |
+| [0006](0006-rust-and-tauri.md) | Rust for agentuxd and aux; Tauri 2 with React and TypeScript for the cockpit | Accepted |
 
 New ADRs copy [`template.md`](template.md) and take the next number.
