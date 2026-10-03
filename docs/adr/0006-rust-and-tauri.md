@@ -1,6 +1,6 @@
 # 0006. Rust for agentuxd and aux; Tauri 2 with React and TypeScript for the cockpit
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-03
 
 ## Context
@@ -28,9 +28,11 @@ The cockpit is a Tauri app ([0004](0004-unified-interface-and-agent-bus.md)), so
 - Rust has a steeper learning curve than Go or TypeScript, which narrows the contributor pool for the core.
 - Compile times are longer, especially for clean CI builds; caching is needed from the start.
 - The cockpit spans two languages (Rust backend, TypeScript frontend), and frontend types must be generated from or kept in sync with the Rust ones.
+- On Linux, Tauri renders with WebKitGTK, which is slower than Chromium and has GPU quirks on some drivers. The distribution pins the WebKitGTK version, and the cockpit's Rust shell only hosts the window, so moving the React frontend to Electron stays a contained change if VM and hardware testing shows WebKitGTK is not good enough.
 
 ## Alternatives considered
 
 - **Go** — simple, fast builds and an official MCP Go SDK, but no code shared with Tauri's Rust backend and a weaker ACP SDK story.
 - **TypeScript on Bun** — official ACP and MCP TypeScript SDKs and the fastest iteration, but heavier runtime memory next to Node-based harnesses and a weaker single-binary and daemon story.
+- **Electron for the cockpit** — Chromium renders more consistently than WebKitGTK and the ecosystem (xterm.js, node-pty) is mature, but each window costs roughly 150–300 MB of RAM on a desktop that already runs several Node-based harness CLIs. Kept as the fallback, see Consequences.
 - **Python** — not suited to a long-running desktop daemon shipped as a binary.
