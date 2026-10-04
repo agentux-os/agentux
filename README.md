@@ -69,7 +69,7 @@ Done:
 Next:
 
 - [ ] End-to-end validation with real harnesses: Claude Code, Codex and Antigravity sessions driven through a full run (OpenCode has been tried).
-- [ ] Container-isolated command execution.
+- [ ] Container-isolated command execution: gate checks in rootless Podman, opt-in per project, designed in [ADR 0009](docs/adr/0009-container-isolation-for-checks.md) ([agentux-core#13](https://github.com/agentux-os/agentux-core/pull/13)); agents' own tool calls next.
 - [ ] Hyprland image variant.
 - [ ] Signed RPMs and images.
 - [ ] `aarch64` builds.
