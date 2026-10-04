@@ -4,7 +4,18 @@
 
 AgentUX is a Linux distribution for developers who use coding agents from several vendors. It ships the providers' own CLI harnesses — Claude Code, Codex, OpenCode, Antigravity CLI — already installed and wired together: one interface on top of all of them, an agent bus so they can talk to each other, and an orchestrator that takes work from issue to reviewed pull request.
 
-> **Status:** early design. No runnable code or image yet; decisions are being recorded in [`docs/adr/`](docs/adr/).
+> **Status:** pre-release (0.3). A bootable image exists, with `agentuxd`, `aux`, the cockpit and every vendor CLI installed; runs go from prompt to pull request through real harness sessions over ACP, agents talk over the agent bus, and any session opens in its vendor's TUI. Cross-vendor runs with real Claude Code, Codex and Antigravity sessions have not been validated end to end yet. Decisions are recorded in [`docs/adr/`](docs/adr/).
+
+## Try it
+
+Install the image from the ISO, or switch an existing Fedora Atomic / bootc system to it:
+
+```sh
+sudo bootc switch ghcr.io/agentux-os/agentux:latest
+systemctl reboot
+```
+
+Details, the ISO download and rollback are in the [agentux-os README](https://github.com/agentux-os/agentux-os#install). After the first login, follow [Getting started](docs/getting-started.md): log in to the vendor CLIs, take the cockpit tour and start a first run.
 
 ## Why
 
@@ -47,11 +58,21 @@ Inference stays with the providers, using your own logins and API keys. No GPU r
 
 ## Roadmap
 
-- [ ] **Core MVP:** `aux run <issue>` drives one implementer and one cross-vendor reviewer to an open PR, on any Linux.
-- [ ] **Agent bus:** agents message each other, request reviews and escalate to you.
-- [ ] **Cockpit:** unified session view, approvals inbox, run board, token spend.
-- [ ] **First image:** bootable AgentUX ISO with harnesses, toolchain and cockpit preinstalled.
-- [ ] Container-isolated command execution; Hyprland image variant.
+Done:
+
+- [x] **Core MVP:** `aux run` drives a planner, an implementer and a cross-vendor reviewer through gates to an open PR, as a persisted state machine in its own worktree ([agentux-core](https://github.com/agentux-os/agentux-core)).
+- [x] **Agent bus:** agents message each other, request reviews, hand off and escalate to you; you can post on the bus and talk to a live session.
+- [x] **Cockpit:** run board, unified session view, approvals inbox, agent bus feed and spend, on the real daemon ([agentux-desktop](https://github.com/agentux-os/agentux-desktop)).
+- [x] **First image:** bootable AgentUX image and ISO with harnesses, toolchain, daemon, cockpit and Plasma defaults; pinned component releases, nightly image and boot test ([agentux-os](https://github.com/agentux-os/agentux-os), [ADR 0008](docs/adr/0008-releases-and-image-pinning.md)).
+- [x] **Terminal mode:** any session opens in its vendor's TUI on the same conversation, from the cockpit or `aux attach` ([ADR 0007](docs/adr/0007-terminal-mode-is-a-session-handoff.md)).
+
+Next:
+
+- [ ] End-to-end validation with real harnesses: Claude Code, Codex and Antigravity sessions driven through a full run (OpenCode has been tried).
+- [ ] Container-isolated command execution.
+- [ ] Hyprland image variant.
+- [ ] Signed RPMs and images.
+- [ ] `aarch64` builds.
 
 ## License
 
