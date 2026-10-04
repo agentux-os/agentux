@@ -130,6 +130,7 @@ checks:
     run: just lint
   - name: test
     run: just test
+    # timeout: 45m            # optional; s, m or h; default 30m, then the check fails and is killed
 
 # Step types are fixed: plan, implement, gate, review, pull_request, custom.
 pipeline:
@@ -165,6 +166,18 @@ budget:
 ```
 
 Loops (`on_fail`, `on_changes_requested`) must point to exactly one earlier step that runs an agent. Credentials never go in this file.
+
+**Running checks in a container.** Checks run code the agents just wrote, by default on your machine with your access. Add `isolation` to run them in a rootless Podman container instead ([ADR 0009](adr/0009-container-isolation-for-checks.md)):
+
+```yaml
+isolation:
+  mode: podman                # none (default) runs checks on the host
+  # image: ghcr.io/example/toolchain:1   # default: the `image` of .devcontainer/devcontainer.json,
+  #                                      # else registry.fedoraproject.org/fedora-toolbox:44
+  # network: true             # default false: no network inside the container
+```
+
+The container sees only the run's worktree (at the same path) and the repository's git directory, read-only; not your home directory, environment or credentials. Files the checks write belong to you. The image must contain the tools your checks call; the first run pulls it. If Podman is missing or the image cannot be pulled, the run fails with that reason. Agents still run on the host, since their CLIs need your logins. `aux validate` shows which image a project's checks would use.
 
 ## 6. Troubleshooting
 
