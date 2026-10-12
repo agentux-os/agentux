@@ -11,7 +11,8 @@ Each ADR records one decision: the context, what was decided, and what it costs.
 | [0005](0005-agentux-yaml.md) | Pipelines are declared in `agentux.yaml` | Accepted; amended by [0009](0009-container-isolation-for-checks.md) |
 | [0006](0006-rust-and-tauri.md) | Rust for agentuxd and aux; Tauri 2 with React and TypeScript for the cockpit | Accepted |
 | [0007](0007-terminal-mode-is-a-session-handoff.md) | Terminal mode is a handoff of the vendor session, not a second driver | Accepted; amends [0004](0004-unified-interface-and-agent-bus.md) |
-| [0008](0008-releases-and-image-pinning.md) | Releases and image pinning | Accepted |
+| [0008](0008-releases-and-image-pinning.md) | Releases and image pinning | Accepted; amended by [0010](0010-image-variants-and-system-identity.md) |
 | [0009](0009-container-isolation-for-checks.md) | Optional container isolation for check commands | Accepted; amends [0005](0005-agentux-yaml.md) |
+| [0010](0010-image-variants-and-system-identity.md) | Image variants and system identity | Accepted; amends [0008](0008-releases-and-image-pinning.md) |
 
 New ADRs copy [`template.md`](template.md) and take the next number.

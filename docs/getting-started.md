@@ -4,18 +4,67 @@ This guide takes you from installing AgentUX to a first run that ends in a pull 
 
 ## 1. Install
 
-AgentUX is a bootc image on Fedora Atomic (Kinoite, KDE Plasma). There are two ways to get it; both are described in full in the [agentux-os README](https://github.com/agentux-os/agentux-os#install).
+AgentUX is a bootc image on Fedora Atomic (Kinoite). The [agentux-os README](https://github.com/agentux-os/agentux-os#install) describes installation in full; this section is the short version.
 
-**From the ISO.** Download `agentux-<date>-x86_64.iso` from a successful run of the [Build ISO](https://github.com/agentux-os/agentux-os/actions/workflows/iso.yml) workflow, check it against its `.sha256`, write it to a USB stick and boot it. The installer asks for the disk, language, time zone and your account.
+### Choose a variant
 
-**From an existing Fedora Atomic or bootc system.**
+Both images are built from the same `Containerfile`, contain the same AgentUX components, cockpit and agent CLIs, and are signed the same way ([ADR 0010](adr/0010-image-variants-and-system-identity.md)):
+
+| Image | Pick it if |
+|---|---|
+| `ghcr.io/agentux-os/agentux` | You want KDE Plasma with the AgentUX theme, panel and shortcuts. The default. |
+| `ghcr.io/agentux-os/agentux-hyprland` | You prefer a keyboard-driven tiling desktop: the cockpit large on the left, agent terminals stacked on the right. The login screen preselects the **AgentUX Hyprland** session; Plasma is still installed and one click away. |
+
+The Hyprland image is larger (it carries both desktops). You can move between them at any time with `bootc switch`; your home directory is untouched.
+
+### From the ISO
+
+Download the ISO from a successful run of the [Build ISO](https://github.com/agentux-os/agentux-os/actions/workflows/iso.yml) workflow: `agentux-<date>-<arch>.iso`, or `agentux-hyprland-<date>-<arch>.iso` when the workflow was run for the Hyprland variant (`<arch>` is `x86_64` for PCs, `aarch64` for 64-bit ARM). Check it and write it to a USB stick:
 
 ```sh
-sudo bootc switch ghcr.io/agentux-os/agentux:latest
+sha256sum -c agentux-*.iso.sha256
+sudo dd if=agentux-<date>-<arch>.iso of=/dev/sdX bs=4M status=progress oflag=sync
+```
+
+Boot it; the installer asks for the disk, language, time zone and your account. If there is no Hyprland ISO, install the Plasma one and switch afterwards (below).
+
+### From an existing Fedora Atomic or bootc system
+
+```sh
+sudo bootc switch ghcr.io/agentux-os/agentux:latest            # Plasma
+sudo bootc switch ghcr.io/agentux-os/agentux-hyprland:latest   # Hyprland
 systemctl reboot
 ```
 
-Either way the system tracks `ghcr.io/agentux-os/agentux:latest` and updates from it. If an update breaks something, `sudo bootc rollback` (or the previous entry in the boot menu) brings back the image you had.
+The system then tracks that image's `:latest` and updates from it. If an update breaks something, `sudo bootc rollback` (or the previous entry in the boot menu) brings back the image you had.
+
+### On ARM
+
+Each image tag is a manifest list with an amd64 and an arm64 image; `bootc switch`, `bootc upgrade` and `podman pull` pick the one for the machine, so the commands above are the same on aarch64. The arm64 image targets UEFI machines that Fedora supports on aarch64: SystemReady servers and workstations, and VMs on Apple silicon or Ampere hosts. Boards that need their own firmware or kernel are not covered.
+
+Boot the `aarch64` ISO through the machine's UEFI firmware, or attach it as the CD of an aarch64 UEFI VM (UTM or Parallels on Apple silicon, or QEMU with `qemu-efi-aarch64`/`edk2-aarch64`). The arm64 image is built and smoke-tested in CI, but has not been booted there yet (CI's arm64 runners have no KVM), so expect to be among the first to try it, and please report what you find.
+
+### Verifying the image
+
+Every published image is signed with [cosign](https://github.com/sigstore/cosign) twice: keyless, with the identity of the agentux-os build workflow on `main`, and with the AgentUX signing key, whose public half is [`files/etc/pki/containers/agentux-os.pub`](https://github.com/agentux-os/agentux-os/blob/main/files/etc/pki/containers/agentux-os.pub) in agentux-os (and `/etc/pki/containers/agentux-os.pub` on an installed system). From a checkout of agentux-os, on any machine:
+
+```sh
+cosign verify ghcr.io/agentux-os/agentux:latest \
+  --certificate-identity-regexp '^https://github\.com/agentux-os/agentux-os/\.github/workflows/build\.yml@refs/heads/main$' \
+  --certificate-oidc-issuer https://token.actions.githubusercontent.com
+
+cosign verify --key files/etc/pki/containers/agentux-os.pub ghcr.io/agentux-os/agentux:latest
+```
+
+For the Hyprland image, use `ghcr.io/agentux-os/agentux-hyprland:latest`. These check the multi-arch list; to check one architecture's image, verify its digest, e.g. for arm64:
+
+```sh
+digest="$(skopeo inspect --raw docker://ghcr.io/agentux-os/agentux:latest \
+  | jq -r '.manifests[] | select(.platform.architecture == "arm64") | .digest')"
+cosign verify --key files/etc/pki/containers/agentux-os.pub "ghcr.io/agentux-os/agentux@$digest"
+```
+
+You do not need to do this on an installed system: its `/etc/containers/policy.json` requires the AgentUX key signature for both images, so `bootc upgrade` and `bootc switch` refuse an unsigned update before downloading it. A system installed from an image older than the signing change gets the policy with its next upgrade; see [On installed systems](https://github.com/agentux-os/agentux-os#on-installed-systems).
 
 ## 2. First login
 
@@ -27,7 +76,7 @@ journalctl --user -u agentux-first-login.service -f
 
 If something fails, it retries and runs again on the next login. When it has succeeded it writes `~/.local/state/agentux/first-login.done`; delete that file and log in again to repeat it.
 
-**Log in to each vendor CLI yourself.** AgentUX never handles credentials: each harness uses the login or API key you set up for it, and inference is billed by that provider. Open a terminal (Meta+Return opens Konsole) and start each CLI you want to use once, following its sign-in:
+**Log in to each vendor CLI yourself.** AgentUX never handles credentials: each harness uses the login or API key you set up for it, and inference is billed by that provider. Open a terminal (Meta+Return opens Konsole in Plasma, Super+Return opens foot in Hyprland) and start each CLI you want to use once, following its sign-in:
 
 ```sh
 claude      # Claude Code
@@ -38,7 +87,7 @@ agy         # Antigravity CLI
 
 You only need the vendors your pipeline uses. The default pipeline uses Claude Code for the planner and implementer and Codex for the reviewer (see [the `agentux.yaml` section](#5-agentuxyaml)).
 
-**The daemon and the cockpit are already running.** `agentuxd` runs as a systemd user service for every user, and the AgentUX Cockpit starts at login. Meta+A opens (or brings forward) the cockpit at any time.
+**The daemon and the cockpit are already running.** `agentuxd` runs as a systemd user service for every user, and the AgentUX Cockpit starts at login. Meta+A (Super+A in Hyprland) opens the cockpit, or brings it forward, at any time.
 
 ## 3. Cockpit tour
 
@@ -65,7 +114,33 @@ Press `?` in the cockpit for the full list of shortcuts.
 | `[` / `]` | Previous / next project |
 | `?` | All shortcuts |
 
-Desktop-wide: **Meta+A** opens the cockpit, **Meta+Return** opens Konsole.
+Desktop-wide in Plasma: **Meta+A** opens the cockpit, **Meta+Return** opens Konsole.
+
+### In the Hyprland session
+
+The **AgentUX Hyprland** session uses the master layout: the cockpit, opened at login, holds the large master area on the left, and every new window (agent terminals, logs) stacks on the right. Waybar runs at the top; its **AgentUX** button also opens the cockpit. These are the shipped bindings (`Super` is the Windows key):
+
+| Key | Action |
+|---|---|
+| `Super+A` | Focus the cockpit, or open it |
+| `Super+Return` | Terminal (foot) |
+| `Super+Space`, `Super+D` | Launcher (fuzzel) |
+| `Super+Q` | Close the window |
+| `Super+F` / `Super+V` | Fullscreen / toggle floating |
+| `Super+M` | Swap the focused window into the master area |
+| `Super+O` | Move the master area (left, top, right, centre) |
+| `Super+[` / `Super+]` | Shrink / grow the master area |
+| `Super+Tab`, `Super+Shift+Tab` | Next / previous window |
+| `Super+arrows`, `Super+H/J/K/L` | Move focus (add `Shift` to move the window) |
+| `Super+1`…`Super+0` | Workspace 1–10 (add `Shift` to move the window there) |
+| `Super`+scroll | Next / previous workspace |
+| `Super`+left / right drag | Move / resize a window |
+| `Super+Shift+V` | Clipboard history |
+| `Print` / `Shift+Print` | Screenshot of a region / the whole screen, to the clipboard |
+| `Super+Escape` | Lock the screen |
+| `Super+Shift+E` | Log out |
+
+The screen locks after 10 minutes idle and before suspend, and turns off after 15. To change anything, edit `~/.config/hypr/hyprland.conf`: it `source`s the AgentUX defaults (`/usr/share/agentux/hyprland/hyprland.conf`, which follow image updates), and whatever you add below that line wins. Waybar, mako, fuzzel, foot, hyprlock and hypridle configs are copied into `~/.config` at Hyprland login when you do not have them yet, and are yours to edit. To make Plasma the default session again, choose it under System Settings > Login Screen.
 
 ## 4. `aux` quick reference
 
