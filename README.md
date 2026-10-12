@@ -1,21 +1,40 @@
-# AgentUX
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="brand/svg/lockup-dark.svg">
+  <img alt="AgentUX" src="brand/svg/lockup-light.svg" width="360">
+</picture>
 
 > **The Linux distribution where every coding agent works as one team.**
 
 AgentUX is a Linux distribution for developers who use coding agents from several vendors. It ships the providers' own CLI harnesses — Claude Code, Codex, OpenCode, Antigravity CLI — already installed and wired together: one interface on top of all of them, an agent bus so they can talk to each other, and an orchestrator that takes work from issue to reviewed pull request.
 
-> **Status:** pre-release (0.3). A bootable image exists, with `agentuxd`, `aux`, the cockpit and every vendor CLI installed; runs go from prompt to pull request through real harness sessions over ACP, agents talk over the agent bus, and any session opens in its vendor's TUI. Cross-vendor runs with real Claude Code, Codex and Antigravity sessions have not been validated end to end yet. Decisions are recorded in [`docs/adr/`](docs/adr/).
+> **Status:** pre-release (0.4.1: agentux-core and agentux-desktop 0.4.1, in the daily images). A bootable, signed image exists for x86_64 and aarch64, in two variants (KDE Plasma and Hyprland), with `agentuxd`, `aux`, the cockpit and every vendor CLI installed. Runs go from prompt to pull request through real harness sessions over ACP, agents talk over the agent bus, any session opens in its vendor's TUI, and gate checks can run in rootless Podman.
+>
+> Verified in CI: both variants build and pass a first-login smoke test on amd64 and arm64; the Plasma image boots nightly under QEMU/KVM on x86_64 and takes a fake-agent run to a pull request; image signatures are checked against the policy installed systems enforce.
+>
+> Not verified yet: full cross-vendor runs with real Claude Code, Codex and Antigravity sessions (OpenCode has been tried); booting the arm64 image on real hardware or a VM; booting the Hyprland image (its config is checked, not run). Decisions are recorded in [`docs/adr/`](docs/adr/).
 
 ## Try it
 
-Install the image from the ISO, or switch an existing Fedora Atomic / bootc system to it:
+There are two images, built from the same `Containerfile` ([ADR 0010](docs/adr/0010-image-variants-and-system-identity.md)):
+
+| Image | Desktop |
+|---|---|
+| `ghcr.io/agentux-os/agentux` | KDE Plasma with the AgentUX defaults (the default) |
+| `ghcr.io/agentux-os/agentux-hyprland` | The same system plus a tiling Hyprland session, preselected at login; Plasma stays selectable |
+
+Install from the ISO, or switch an existing Fedora Atomic / bootc system to either image:
 
 ```sh
-sudo bootc switch ghcr.io/agentux-os/agentux:latest
+sudo bootc switch ghcr.io/agentux-os/agentux:latest            # Plasma
+sudo bootc switch ghcr.io/agentux-os/agentux-hyprland:latest   # Hyprland
 systemctl reboot
 ```
 
-Details, the ISO download and rollback are in the [agentux-os README](https://github.com/agentux-os/agentux-os#install). After the first login, follow [Getting started](docs/getting-started.md): log in to the vendor CLIs, take the cockpit tour and start a first run.
+Both images are multi-arch: the same command works on x86_64 and on 64-bit ARM UEFI machines (SystemReady hardware, VMs on Apple silicon or Ampere hosts), and the ISO comes as `x86_64` and `aarch64`. The arm64 image is built and smoke-tested but has not been booted yet; boards that need their own firmware or kernel are not covered.
+
+Every published image is signed with cosign (keyless and with the AgentUX key), and installed systems refuse unsigned updates; to check a signature yourself, see [Verifying the image](https://github.com/agentux-os/agentux-os#verifying-the-image).
+
+Details, the ISO download and rollback are in the [agentux-os README](https://github.com/agentux-os/agentux-os#install). After the first login, follow [Getting started](docs/getting-started.md): choose a variant, log in to the vendor CLIs, take the cockpit tour and start a first run.
 
 ## Why
 
@@ -41,7 +60,7 @@ Inference stays with the providers, using your own logins and API keys. No GPU r
 
 | Layer | What it is |
 |---|---|
-| OS | Fedora Atomic built with bootc; KDE Plasma (Wayland); immutable with atomic rollback |
+| OS | Fedora Atomic (Kinoite) built with bootc, x86_64 and aarch64; KDE Plasma (Wayland), or Hyprland in the second image; immutable with atomic rollback, signed images |
 | Harnesses | Each provider's CLI, driven through the Agent Client Protocol (ACP) or its headless mode |
 | `agentuxd` | Daemon: runs, worktrees, sessions, workflow state (SQLite), agent bus (MCP) |
 | Cockpit / `aux` | Unified desktop interface and its terminal twin |
@@ -54,7 +73,7 @@ Inference stays with the providers, using your own logins and API keys. No GPU r
 | [agentux](https://github.com/agentux-os/agentux) | Specification, roadmap, ADRs |
 | [agentux-core](https://github.com/agentux-os/agentux-core) | `agentuxd`, `aux` CLI, workflow engine, harness adapters, agent bus |
 | [agentux-desktop](https://github.com/agentux-os/agentux-desktop) | Cockpit app and desktop configuration |
-| [agentux-os](https://github.com/agentux-os/agentux-os) | `Containerfile`, image CI and ISO builds |
+| [agentux-os](https://github.com/agentux-os/agentux-os) | `Containerfile` for both image variants, image CI, signing, boot splash and ISO builds |
 
 ## Roadmap
 
@@ -65,14 +84,20 @@ Done:
 - [x] **Cockpit:** run board, unified session view, approvals inbox, agent bus feed and spend, on the real daemon ([agentux-desktop](https://github.com/agentux-os/agentux-desktop)).
 - [x] **First image:** bootable AgentUX image and ISO with harnesses, toolchain, daemon, cockpit and Plasma defaults; pinned component releases, nightly image and boot test ([agentux-os](https://github.com/agentux-os/agentux-os), [ADR 0008](docs/adr/0008-releases-and-image-pinning.md)).
 - [x] **Terminal mode:** any session opens in its vendor's TUI on the same conversation, from the cockpit or `aux attach` ([ADR 0007](docs/adr/0007-terminal-mode-is-a-session-handoff.md)).
+- [x] **Container-isolated checks:** gate checks run in rootless Podman, opt-in per project, with per-check timeouts ([ADR 0009](docs/adr/0009-container-isolation-for-checks.md), [agentux-core#13](https://github.com/agentux-os/agentux-core/pull/13)).
+- [x] **Hyprland variant:** `ghcr.io/agentux-os/agentux-hyprland`, a tiling session laid out for watching several agents ([ADR 0010](docs/adr/0010-image-variants-and-system-identity.md), [agentux-os#15](https://github.com/agentux-os/agentux-os/pull/15)).
+- [x] **Signed images:** keyless and key-based cosign signatures on every published image, enforced by the container policy on installed systems ([agentux-os#9](https://github.com/agentux-os/agentux-os/pull/9)).
+- [x] **`aarch64`:** RPMs for both components, a multi-arch image and an aarch64 ISO ([agentux-os#12](https://github.com/agentux-os/agentux-os/pull/12)).
+- [x] **System identity:** the system calls itself AgentUX (os-release, KDE About) and boots with an AgentUX Plymouth splash ([ADR 0010](docs/adr/0010-image-variants-and-system-identity.md)).
 
 Next:
 
 - [ ] End-to-end validation with real harnesses: Claude Code, Codex and Antigravity sessions driven through a full run (OpenCode has been tried).
-- [ ] Container-isolated command execution: gate checks in rootless Podman, opt-in per project, designed in [ADR 0009](docs/adr/0009-container-isolation-for-checks.md) ([agentux-core#13](https://github.com/agentux-os/agentux-core/pull/13)); agents' own tool calls next.
-- [ ] Hyprland image variant.
-- [ ] Signed RPMs and images.
-- [ ] `aarch64` builds.
+- [ ] Isolating agents' own tool calls, not only gate checks (needs its own ADR: the harness runs tools in a container while its login stays outside).
+- [ ] Signed RPMs (the images are signed; the component RPMs they install are not).
+- [ ] Boot test on arm64: the arm64 image has never been booted, since CI's arm64 runners lack KVM.
+- [ ] Boot test for the Hyprland image (today only its configuration is checked).
+- [ ] Agent status in Hyprland: runs and pending approvals from `agentuxd` in Waybar (today its AgentUX module only opens the cockpit) and as mako notifications.
 
 ## License
 
