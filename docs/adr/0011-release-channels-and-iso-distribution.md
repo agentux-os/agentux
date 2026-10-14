@@ -44,6 +44,7 @@ This amends [0008](0008-releases-and-image-pinning.md), where `main`'s daily `:l
   - The live ISO was already booted and installed from its live session.
   - The installer ISO is now installed unattended: the ISO's own kernel, initrd, command line and kickstart, with only the UI's answers added and GRUB's interactive menu bypassed by a direct kernel boot. The installed disk is then booted and checked over SSH: it follows the ISO's channel from the registry, the signature policy requires the AgentUX key, and no units failed.
   - A failure in either test stops publishing.
+  - Its first run found that every Anaconda install (installer and live ISO) started degraded: Anaconda writes the btrfs root into `/etc/fstab`, and `systemd-remount-fs` cannot apply its options to the composefs root. Both kickstarts now comment that entry out, as bootc's own installer writes none.
   - aarch64 ISOs are built but not booted, since GitHub's arm64 runners have no KVM, and the release notes and `latest.json` say so.
 - **Signing and secrets:**
   - One AgentUX key keeps signing every image, nightly and release, as a repository secret.
