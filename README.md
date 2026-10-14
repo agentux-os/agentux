@@ -7,11 +7,19 @@
 
 AgentUX is a Linux distribution for developers who use coding agents from several vendors. It ships the providers' own CLI harnesses — Claude Code, Codex, OpenCode, Antigravity CLI — already installed and wired together: one interface on top of all of them, an agent bus so they can talk to each other, and an orchestrator that takes work from issue to reviewed pull request.
 
-> **Status:** pre-release (0.4.1: agentux-core and agentux-desktop 0.4.1, in the daily images). A bootable, signed image exists for x86_64 and aarch64, in two variants (KDE Plasma and Hyprland), with `agentuxd`, `aux`, the cockpit and every vendor CLI installed. Runs go from prompt to pull request through real harness sessions over ACP, agents talk over the agent bus, any session opens in its vendor's TUI, and gate checks can run in rootless Podman.
+> **Status:** pre-release (agentux-core 0.4.2 and agentux-desktop 0.4.1, in the daily images). A bootable, signed image exists for x86_64 and aarch64, in two variants (KDE Plasma and Hyprland), with `agentuxd`, `aux`, the cockpit and every vendor CLI installed. Runs go from prompt to pull request through real harness sessions over ACP, agents talk over the agent bus, any session opens in its vendor's TUI, and gate checks can run in rootless Podman.
 >
 > Verified in CI: both variants build and pass a first-login smoke test on amd64 and arm64; the Plasma image boots nightly under QEMU/KVM on x86_64 and takes a fake-agent run to a pull request; image signatures are checked against the policy installed systems enforce.
 >
 > Not verified yet: full cross-vendor runs with real Claude Code, Codex and Antigravity sessions (OpenCode has been tried); booting the arm64 image on real hardware or a VM; booting the Hyprland image (its config is checked, not run). Decisions are recorded in [`docs/adr/`](docs/adr/).
+
+![The AgentUX cockpit on the live ISO: two demo runs, one waiting for plan approval](docs/screenshots/cockpit-plan-approval.png)
+
+| Boot | First boot | Runs in progress |
+|---|---|---|
+| [![AgentUX boot splash](docs/screenshots/boot-splash.png)](docs/screenshots/boot-splash.png) | [![First-boot setup over the AgentUX wallpaper](docs/screenshots/first-boot.png)](docs/screenshots/first-boot.png) | [![Two runs in the gate step](docs/screenshots/cockpit-runs.png)](docs/screenshots/cockpit-runs.png) |
+
+These are captured by CI: the live ISO and installer tests boot the real images in QEMU and take the screenshots (demo runs use fake agents).
 
 ## Try it
 
@@ -21,6 +29,8 @@ There are two images, built from the same `Containerfile` ([ADR 0010](docs/adr/0
 |---|---|
 | `ghcr.io/agentux-os/agentux` | KDE Plasma with the AgentUX defaults (the default) |
 | `ghcr.io/agentux-os/agentux-hyprland` | The same system plus a tiling Hyprland session, preselected at login; Plasma stays selectable |
+
+To look around without installing, boot the **live ISO**: the real desktop with a demo of fake agents, and an *Install AgentUX* launcher that installs the signed image from the registry ([Try it live](https://github.com/agentux-os/agentux-os#try-it-live)).
 
 Install from the ISO, or switch an existing Fedora Atomic / bootc system to either image:
 
