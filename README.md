@@ -1,13 +1,35 @@
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="brand/svg/lockup-dark.svg">
-  <img alt="AgentUX" src="brand/svg/lockup-light.svg" width="360">
-</picture>
+<p align="center">
+  <a href="https://agentuxos.org">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="brand/svg/lockup-dark.svg">
+      <img alt="AgentUX" src="brand/svg/lockup-light.svg" width="360">
+    </picture>
+  </a>
+</p>
 
-> **The Linux distribution where every coding agent works as one team.**
+<h3 align="center">The Linux distribution where every coding agent works as one team.</h3>
+
+<p align="center">
+  <a href="https://github.com/agentux-os/agentux-os/actions/workflows/build.yml"><img alt="Image build" src="https://img.shields.io/github/actions/workflow/status/agentux-os/agentux-os/build.yml?branch=main&label=image%20build&logo=github&labelColor=0b0d10"></a>
+  <a href="https://github.com/agentux-os/agentux-core/releases"><img alt="agentux-core release" src="https://img.shields.io/github/v/release/agentux-os/agentux-core?include_prereleases&label=agentux-core&labelColor=0b0d10&color=4f7d0b"></a>
+  <a href="https://github.com/agentux-os/agentux-desktop/releases"><img alt="agentux-desktop release" src="https://img.shields.io/github/v/release/agentux-os/agentux-desktop?include_prereleases&label=agentux-desktop&labelColor=0b0d10&color=4f7d0b"></a>
+  <a href="docs/adr/0001-linux-distribution-on-fedora-atomic.md"><img alt="Base: Fedora Kinoite 44" src="https://img.shields.io/badge/base-Fedora%20Kinoite%2044%20%C2%B7%20bootc-4f7d0b?logo=fedora&logoColor=white&labelColor=0b0d10"></a>
+  <a href="LICENSE"><img alt="License" src="https://img.shields.io/github/license/agentux-os/agentux?labelColor=0b0d10&color=4f7d0b"></a>
+  <a href="https://agentuxos.org"><img alt="Website" src="https://img.shields.io/badge/website-agentuxos.org-c6f36b?labelColor=0b0d10"></a>
+  <a href="https://download.agentuxos.org"><img alt="Download" src="https://img.shields.io/badge/download-ISO-c6f36b?labelColor=0b0d10"></a>
+</p>
+
+<p align="center">
+  <a href="https://agentuxos.org"><b>Website</b></a> ·
+  <a href="https://download.agentuxos.org"><b>Download</b></a> ·
+  <a href="docs/"><b>Docs</b></a> ·
+  <a href="docs/getting-started.md"><b>Getting started</b></a> ·
+  <a href="https://github.com/agentux-os/agentux-os/releases"><b>Releases</b></a>
+</p>
 
 AgentUX is a Linux distribution for developers who use coding agents from several vendors. It ships the providers' own CLI harnesses — Claude Code, Codex, OpenCode, Antigravity CLI — already installed and wired together: one interface on top of all of them, an agent bus so they can talk to each other, and an orchestrator that takes work from issue to reviewed pull request.
 
-> **Status:** pre-release (agentux-core 0.4.2 and agentux-desktop 0.4.5, in the daily images). A bootable, signed image exists for x86_64 and aarch64, in two variants (KDE Plasma and Hyprland), with `agentuxd`, `aux`, the cockpit and every vendor CLI installed. Runs go from prompt to pull request through real harness sessions over ACP, agents talk over the agent bus, any session opens in its vendor's TUI, and gate checks can run in rootless Podman.
+> **Status:** pre-release (agentux-core 0.4.2 and agentux-desktop 0.4.5, in the daily images; the first image release, v0.5.x, is being published now). A bootable, signed image exists for x86_64 and aarch64, in two variants (KDE Plasma and Hyprland), with `agentuxd`, `aux`, the cockpit and every vendor CLI installed. Runs go from prompt to pull request through real harness sessions over ACP, agents talk over the agent bus, any session opens in its vendor's TUI, and gate checks can run in rootless Podman.
 >
 > Verified in CI: both variants build and pass a first-login smoke test on amd64 and arm64; the Plasma image boots nightly under QEMU/KVM on x86_64 and takes a fake-agent run to a pull request; image signatures are checked against the policy installed systems enforce.
 >
@@ -20,6 +42,24 @@ AgentUX is a Linux distribution for developers who use coding agents from severa
 | [![The penguin swimming in the boot splash](docs/screenshots/boot-animation.gif)](docs/screenshots/boot-animation.gif) | [![The AgentUX installer on the live ISO](docs/screenshots/installer.png)](docs/screenshots/installer.png) | [![First-boot setup over the AgentUX wallpaper](docs/screenshots/first-boot.png)](docs/screenshots/first-boot.png) |
 
 The screenshots are captured by CI: the live ISO and installer tests boot the real images in QEMU (demo runs use fake agents). The boot animation is rendered from the Plymouth theme; the login splash plays the same scene.
+
+## Start here
+
+This repository is the project's front door: the specification, the roadmap, the design decisions and the brand. Where to go next:
+
+| I want to… | Go to |
+|---|---|
+| See what AgentUX is | [agentuxos.org](https://agentuxos.org), then [Why](#why) and [How it works](#how-it-works) below |
+| Try it without installing | The live ISO: [agentux-live-x86_64.iso](https://download.agentuxos.org/iso/stable/agentux-live-x86_64.iso) ([how](https://github.com/agentux-os/agentux-os#try-it-live)) |
+| Install it | [Try it](#try-it) below, or [Install](https://github.com/agentux-os/agentux-os#install) in agentux-os; every download is on [download.agentuxos.org](https://download.agentuxos.org) |
+| Get going after the first login | [Getting started](docs/getting-started.md) |
+| Run agents from the terminal | [`aux` and `agentuxd`](https://github.com/agentux-os/agentux-core#at-a-glance) in agentux-core |
+| Work on the cockpit or the desktop | [agentux-desktop](https://github.com/agentux-os/agentux-desktop#at-a-glance) |
+| Understand a design decision | [Architecture decision records](docs/adr/) |
+| Use the logo or colours | [Brand](brand/) |
+| See what is done and what is next | [Roadmap](#roadmap) |
+
+**Contents:** [Try it](#try-it) · [Why](#why) · [How it works](#how-it-works) · [Architecture](#architecture) · [Repositories](#repositories) · [Roadmap](#roadmap) · [License](#license)
 
 ## Try it
 
