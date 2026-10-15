@@ -18,5 +18,6 @@ Each ADR records one decision: the context, what was decided, and what it costs.
 | [0012](0012-system-version-and-release-identity.md) | System version, release identity and the branded installer | Accepted; amends [0010](0010-image-variants-and-system-identity.md) and [0011](0011-release-channels-and-iso-distribution.md) |
 | [0013](0013-first-run-wizard.md) | A first-run wizard, and how developer tools install | Accepted |
 | [0014](0014-installation-profiles-and-platform-services.md) | Installation profiles and optional platform services | Accepted |
+| [0015](0015-organization-command-office-contract.md) | Organization definitions are versioned domain contracts | Proposed |
 
 New ADRs copy [`template.md`](template.md) and take the next number.

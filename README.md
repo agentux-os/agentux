@@ -152,6 +152,7 @@ Next:
 - [ ] Boot test on arm64: the arm64 image has never been booted, since CI's arm64 runners lack KVM.
 - [ ] Boot test for the Hyprland image (today only its configuration is checked).
 - [ ] Agent status in Hyprland: runs and pending approvals from `agentuxd` in Waybar (today its AgentUX module only opens the cockpit) and as mako notifications.
+- [ ] Organization contract: versioned organization definitions, Command events and Office read models ([ADR 0015](docs/adr/0015-organization-command-office-contract.md)).
 
 ## License
 
