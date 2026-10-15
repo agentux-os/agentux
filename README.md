@@ -114,6 +114,7 @@ Inference stays with the providers, using your own logins and API keys. No GPU r
 | Harnesses | Each provider's CLI, driven through the Agent Client Protocol (ACP) or its headless mode |
 | `agentuxd` | Daemon: runs, worktrees, sessions, workflow state (SQLite), agent bus (MCP) |
 | Cockpit / `aux` | Unified desktop interface and its terminal twin |
+| OS profiles | Role selection at install time: workstation, node, Command server, executive Office or complete |
 | Toolchain | `git`, `gh`, `mise`, `uv`, `bun`, `ripgrep`, `fd`, `ast-grep`, `delta`, `lazygit`, `just`, Podman |
 
 ## Repositories
@@ -124,6 +125,9 @@ Inference stays with the providers, using your own logins and API keys. No GPU r
 | [agentux-core](https://github.com/agentux-os/agentux-core) | `agentuxd`, `aux` CLI, workflow engine, harness adapters, agent bus |
 | [agentux-desktop](https://github.com/agentux-os/agentux-desktop) | Cockpit app and desktop configuration |
 | [agentux-os](https://github.com/agentux-os/agentux-os) | `Containerfile` for both image variants, image CI, signing, boot splash and ISO builds |
+| [agentux-command](https://github.com/agentux-os/agentux-command) | Remote control plane for organizations running AgentUX nodes |
+| [agentux-protocol](https://github.com/agentux-os/agentux-protocol) | Versioned Command-to-node protocol |
+| [agentux-apps](https://github.com/agentux-os/agentux-apps) | Command and Office web experiences |
 
 ## Roadmap
 
@@ -148,6 +152,7 @@ Next:
 - [ ] Boot test on arm64: the arm64 image has never been booted, since CI's arm64 runners lack KVM.
 - [ ] Boot test for the Hyprland image (today only its configuration is checked).
 - [ ] Agent status in Hyprland: runs and pending approvals from `agentuxd` in Waybar (today its AgentUX module only opens the cockpit) and as mako notifications.
+- [ ] Organization contract: versioned organization definitions, Command events and Office read models ([ADR 0015](docs/adr/0015-organization-command-office-contract.md)).
 
 ## License
 
