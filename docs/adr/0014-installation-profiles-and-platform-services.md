@@ -1,6 +1,6 @@
 # 0014. Installation profiles and optional platform services
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-15
 
 ## Context
