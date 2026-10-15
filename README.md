@@ -16,7 +16,7 @@
   <a href="docs/adr/0001-linux-distribution-on-fedora-atomic.md"><img alt="Base: Fedora Kinoite 44" src="https://img.shields.io/badge/base-Fedora%20Kinoite%2044%20%C2%B7%20bootc-4f7d0b?logo=fedora&logoColor=white&labelColor=0b0d10"></a>
   <a href="LICENSE"><img alt="License" src="https://img.shields.io/github/license/agentux-os/agentux?labelColor=0b0d10&color=4f7d0b"></a>
   <a href="https://agentuxos.org"><img alt="Website" src="https://img.shields.io/badge/website-agentuxos.org-c6f36b?labelColor=0b0d10"></a>
-  <a href="https://download.agentuxos.org"><img alt="Download" src="https://img.shields.io/badge/download-ISO-c6f36b?labelColor=0b0d10"></a>
+  <a href="https://agentuxos.org/download/"><img alt="Download" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdownload.agentuxos.org%2Flatest.json&query=%24.version&label=download&labelColor=0b0d10&color=c6f36b&cacheSeconds=3600"></a>
 </p>
 
 <p align="center">
