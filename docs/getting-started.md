@@ -76,7 +76,20 @@ journalctl --user -u agentux-first-login.service -f
 
 If something fails, it retries and runs again on the next login. When it has succeeded it writes `~/.local/state/agentux/first-login.done`; delete that file and log in again to repeat it.
 
-**Log in to each vendor CLI yourself.** AgentUX never handles credentials: each harness uses the login or API key you set up for it, and inference is billed by that provider. Open a terminal (Meta+Return opens Konsole in Plasma, Super+Return opens foot in Hyprland) and start each CLI you want to use once, following its sign-in:
+**The welcome wizard opens next to the cockpit.** On your first login AgentUX opens **Welcome to AgentUX**, a short setup in four steps. Every step can be skipped, and you can reopen the wizard any time from the app menu (**Welcome to AgentUX**), from the cockpit's sidebar (**Welcome & setup**) or with `agentux-cockpit --welcome`. It does not open on the live ISO.
+
+1. **Agents.** It shows the agent CLIs installing, and has a **Sign in** button for each that opens a terminal with that CLI's own login. AgentUX never handles credentials: each harness uses the login or API key you set up for it, and inference is billed by that provider. To keep an API key in the desktop's secret service (KWallet) instead of a file, the wizard shows the `secret-tool` commands to use.
+2. **Tools & SDKs.** One catalog to search and tick: editors and IDEs, languages and SDKs, cloud and Kubernetes CLIs, databases, API clients, Git tools, containers, browsers, design and chat apps. Everything installs for you only, without sudo, in the background (closing the window does not stop it), each item in one of four ways:
+   - **Flatpak** from Flathub, for apps such as DBeaver, Postman, Bruno, GitKraken, Podman Desktop or Slack. **VS Code** is a Flatpak too, set up so its integrated terminal is a login shell on the host (`flatpak-spawn --host bash -l`), where your SDKs, podman and the agent CLIs work.
+   - **JetBrains Toolbox** for IntelliJ IDEA, PyCharm, WebStorm, GoLand, Rider, CLion, DataGrip, Android Studio and the rest: the wizard installs Toolbox, and you install the IDEs from it. They run without a sandbox, so they see your SDKs.
+   - **mise** for languages and CLIs: Java (Temurin 21 by default, or 17 or 25), Node.js, Python, Go, Rust, .NET, Kotlin, Gradle, Maven, Terraform, kubectl, the cloud CLIs and more, with `mise use --global`.
+   - **Distrobox** for anything else: a mutable Fedora or Ubuntu container (`distrobox enter fedora-dev`), also used for PHP, Elixir and a C/C++ toolchain.
+3. **Git & SSH.** Your Git name, e-mail and default branch, an SSH key, and buttons for GitHub's SSH keys page and `gh auth login`.
+4. **Done.** What is installed or still installing, and **Open the cockpit**.
+
+Each item's commands are one click away in the wizard, and the same commands work in a terminal. The wizard's backend is `/usr/libexec/agentux-setup` (`agentux-setup --help`); its logs are in `~/.local/state/agentux/setup/logs/`. To see the wizard again at your next login, run `/usr/libexec/agentux-setup reset`. Why tools install this way: [ADR 0013](adr/0013-first-run-wizard.md).
+
+**Signing in by hand.** Without the wizard, open a terminal (Meta+Return opens Konsole in Plasma, Super+Return opens foot in Hyprland) and start each CLI you want to use once, following its sign-in:
 
 ```sh
 claude      # Claude Code

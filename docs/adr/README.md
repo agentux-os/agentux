@@ -16,5 +16,6 @@ Each ADR records one decision: the context, what was decided, and what it costs.
 | [0010](0010-image-variants-and-system-identity.md) | Image variants and system identity | Accepted; amends [0008](0008-releases-and-image-pinning.md); amended by [0011](0011-release-channels-and-iso-distribution.md) and [0012](0012-system-version-and-release-identity.md) |
 | [0011](0011-release-channels-and-iso-distribution.md) | Release channels, ISO distribution and the release gate | Accepted; amends [0008](0008-releases-and-image-pinning.md) and [0010](0010-image-variants-and-system-identity.md); amended by [0012](0012-system-version-and-release-identity.md) |
 | [0012](0012-system-version-and-release-identity.md) | System version, release identity and the branded installer | Accepted; amends [0010](0010-image-variants-and-system-identity.md) and [0011](0011-release-channels-and-iso-distribution.md) |
+| [0013](0013-first-run-wizard.md) | A first-run wizard, and how developer tools install | Accepted |
 
 New ADRs copy [`template.md`](template.md) and take the next number.
