@@ -115,6 +115,8 @@ The cockpit is a single window over every agent session the daemon runs. Project
 
 Press `?` in the cockpit for the full list of shortcuts.
 
+**The penguin helps.** The AgentUX penguin at the foot of the sidebar offers a short tour of the cockpit the first time you open it (the wizard's last step can start it too), and you can restart it from its menu. `Shift+F1` turns on **What's this?**: click anything in the cockpit or the wizard to learn what it is and how it works. `F1` opens **Ask the penguin**, which answers questions about AgentUX from the documentation that ships with the cockpit, offline. If you want, it can also ask one of your own agents (off by default; it runs on your agent account, without tools or files). It only knows AgentUX, not the desktop around it ([ADR 0017](adr/0017-help-mascot.md)).
+
 | Key | Action |
 |---|---|
 | `B` / `I` / `M` | Run board / approvals inbox / agent bus |
@@ -126,6 +128,7 @@ Press `?` in the cockpit for the full list of shortcuts.
 | `Shift+Esc`, `Ctrl+]` | Leave the terminal |
 | `[` / `]` | Previous / next project |
 | `?` | All shortcuts |
+| `F1` / `Shift+F1` | Ask the penguin / What's this? |
 
 Desktop-wide in Plasma: **Meta+A** opens the cockpit, **Meta+Return** opens Konsole.
 
