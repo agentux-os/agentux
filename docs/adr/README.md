@@ -19,5 +19,6 @@ Each ADR records one decision: the context, what was decided, and what it costs.
 | [0013](0013-first-run-wizard.md) | A first-run wizard, and how developer tools install | Accepted |
 | [0014](0014-installation-profiles-and-platform-services.md) | Installation profiles and optional platform services | Accepted |
 | [0015](0015-organization-command-office-contract.md) | Organization definitions are versioned domain contracts | Proposed |
+| [0017](0017-help-mascot.md) | A help mascot that knows AgentUX, offline first | Accepted |
 
 New ADRs copy [`template.md`](template.md) and take the next number.
