@@ -150,20 +150,20 @@ encountered. The initial backlog is:
 1. **Projection API and approval vertical slice** — this specification's first
    delivery.
 2. **Durable Command projection store** — PostgreSQL read model, event offsets,
-   replay and idempotent projection updates.
+   replay and idempotent projection updates ([agentux-command#12](https://github.com/agentux-os/agentux-command/issues/12)).
 3. **Authenticated organization sessions** — OIDC/session integration,
-   organization membership, capability claims and token rotation.
+   organization membership, capability claims and token rotation ([agentux-command#13](https://github.com/agentux-os/agentux-command/issues/13)).
 4. **Live Office updates** — outbound node events into Command, Command event
-   stream/WebSocket or SSE, reconnect and replay cursors.
+   stream/WebSocket or SSE, reconnect and replay cursors ([agentux-command#14](https://github.com/agentux-os/agentux-command/issues/14); depends on #12 and #13).
 5. **Operational drill-down** — run detail, step history, artifacts, costs,
-   incidents and correlation navigation.
+   incidents and correlation navigation ([agentux-apps#5](https://github.com/agentux-os/agentux-apps/issues/5)).
 6. **Leadership definition editor** — drafts, validation, reviewable diffs,
-   immutable publication and history, based on ADR 0015.
+   immutable publication and history, based on ADR 0015 ([agentux#22](https://github.com/agentux-os/agentux/issues/22); depends on #12 and #13).
 7. **Governance and audit center** — decision history, policy changes,
-   access trail, retention and export.
+   access trail, retention and export ([agentux-command#15](https://github.com/agentux-os/agentux-command/issues/15)).
 8. **Reliability and accessibility hardening** — contract tests, browser
    tests, keyboard navigation, screen-reader semantics, localization and
-   performance budgets for large organizations.
+   performance budgets for large organizations ([agentux-apps#6](https://github.com/agentux-os/agentux-apps/issues/6)).
 
 Each issue must state the user outcome, capability boundary, data contract,
 authorization behavior, failure states, migration/compatibility impact and
