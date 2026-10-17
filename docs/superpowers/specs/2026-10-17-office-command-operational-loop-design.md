@@ -67,6 +67,33 @@ owned by AgentUX Core and the node.
 - **Progressive integration:** fixtures, snapshot reads, event refresh and
   durable streaming are compatible adapters, not separate product models.
 
+## Distributed data model
+
+The first in-memory implementation must already use the identity and ordering
+rules required by a distributed deployment:
+
+- Every organization-scoped record carries `organizationId`; definitions use
+  immutable `definitionVersion` and `schemaVersion`.
+- Every event carries `eventId`, `eventType`, `occurredAt`, `receivedAt`,
+  `organizationId`, optional `nodeId`/`runId`, `correlationId`,
+  `causationId` and the applicable definition/schema versions.
+- Node event streams are at-least-once. Command deduplicates by `eventId` and
+  orders a node stream by `(nodeId, sequence)`; a reconnect resumes from the
+  last acknowledged sequence.
+- Approval commands carry an idempotency key and are partitioned by
+  `(organizationId, approvalId)`; a retry returns the original decision.
+- Projections expose `projectedAt`, `source`, `lastEventId` and a freshness
+  state. A missing or delayed partition is visible as degraded data rather
+  than an empty organization.
+- The durable target is an append-only event log plus materialized read models.
+  The event log is partitionable by organization and time; read models are
+  keyed by organization and entity ID, with last-applied event/sequence for
+  idempotent upserts. JSON payloads may be retained for forward-compatible
+  event details, while query-critical fields remain normalized.
+
+This avoids coupling Office to a Command database while keeping replay,
+multi-node correlation, eventual consistency and migration possible.
+
 ## First vertical slice
 
 ### Command API

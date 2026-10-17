@@ -16,6 +16,8 @@
 - Office never accesses Command storage or AgentUX Core local sockets.
 - Fixtures remain available for local demos and deterministic tests.
 - Every projection includes schema version, definition version, projected timestamp, freshness and source.
+- Distributed records use organization/entity IDs, immutable definition versions, event IDs, node sequence cursors and idempotency keys.
+- The in-memory store must model append-only events plus materialized projection state so a durable event log/read model can replace it without changing Office.
 - Approval resolution is idempotent, permission-checked and auditable at the API boundary.
 - A stale or unavailable projection must not be rendered as an empty organization.
 - The first slice does not add PostgreSQL, production event streaming or the leadership editor.
@@ -68,11 +70,12 @@
 
 - [ ] **Step 1: Write failing Go tests** for projection success, organization filter, valid empty projection, stale projection, malformed authorization and each approval conflict.
 - [ ] **Step 2: Implement deterministic in-memory store** seeded with the same semantic fixture data as AUXP, keeping the store behind interfaces so PostgreSQL can replace it later.
-- [ ] **Step 3: Implement authorization boundary** using a configured Bearer token/capability set for the first slice; return `401` for missing/invalid credentials and `403` when `organization.read` or `approval.decide` is absent.
-- [ ] **Step 4: Implement projection handler** with query validation, JSON response, freshness metadata and `503`/typed degraded response when the store marks the projection unavailable.
-- [ ] **Step 5: Implement approval handler** with decision/reason/idempotency parsing, idempotent replay and typed `409` conflicts for denied, expired, already-decided, not-found and stale-version cases.
-- [ ] **Step 6: Run** `go test ./...`; expected: all Command tests pass, including the new endpoint and authorization cases.
-- [ ] **Step 7: Commit** Command implementation as `feat: expose Office projection and approval API`.
+- [ ] **Step 3: Model distributed identity and replay metadata** in the store: organization/entity keys, `eventId`, `nodeId`, monotonic sequence, `lastEventId`, `projectedAt`, freshness and idempotency records; deduplicate repeated events before applying them.
+- [ ] **Step 4: Implement authorization boundary** using a configured Bearer token/capability set for the first slice; return `401` for missing/invalid credentials and `403` when `organization.read` or `approval.decide` is absent.
+- [ ] **Step 5: Implement projection handler** with query validation, JSON response, freshness metadata and `503`/typed degraded response when the store marks the projection unavailable.
+- [ ] **Step 6: Implement approval handler** with decision/reason/idempotency parsing, idempotent replay and typed `409` conflicts for denied, expired, already-decided, not-found and stale-version cases.
+- [ ] **Step 7: Run** `go test ./...`; expected: all Command tests pass, including endpoint, distributed identity/replay and authorization cases.
+- [ ] **Step 8: Commit** Command implementation as `feat: expose Office projection and approval API`.
 
 ### Task 3: Add the typed Apps API adapter
 
