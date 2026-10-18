@@ -29,11 +29,11 @@
 
 AgentUX is a Linux distribution for developers who use coding agents from several vendors. It ships the providers' own CLI harnesses — Claude Code, Codex, OpenCode, Antigravity CLI — already installed and wired together: one interface on top of all of them, an agent bus so they can talk to each other, and an orchestrator that takes work from issue to reviewed pull request.
 
-> **Status:** pre-release. The current component versions, image release, RPMs and ISOs are published by their own release pipelines and linked dynamically above and below. A bootable, signed image exists for x86_64 and aarch64, in two variants (KDE Plasma and Hyprland), with `agentuxd`, `aux`, the cockpit and every vendor CLI installed. Runs go from prompt to pull request through real harness sessions over ACP, agents talk over the agent bus, any session opens in its vendor's TUI, and gate checks can run in rootless Podman.
+> **Status:** pre-release. The current component versions, image release, RPMs and ISOs are published by their own release pipelines and linked dynamically above and below. A bootable, signed image exists for x86_64 and aarch64, with KDE Plasma (and an experimental, nightly COSMIC image), with `agentuxd`, `aux`, the cockpit and every vendor CLI installed. Runs go from prompt to pull request through real harness sessions over ACP, agents talk over the agent bus, any session opens in its vendor's TUI, and gate checks can run in rootless Podman.
 >
 > Verified in CI: both variants build and pass a first-login smoke test on amd64 and arm64; the Plasma image boots nightly under QEMU/KVM on x86_64 and takes a fake-agent run to a pull request; image signatures are checked against the policy installed systems enforce.
 >
-> Not verified yet: full cross-vendor runs with real Claude Code, Codex and Antigravity sessions (OpenCode has been tried); booting the arm64 image on real hardware or a VM; booting the Hyprland image (its config is checked, not run). Decisions are recorded in [`docs/adr/`](docs/adr/).
+> Not verified yet: full cross-vendor runs with real Claude Code, Codex and Antigravity sessions (OpenCode has been tried); booting the arm64 image on real hardware or a VM. Decisions are recorded in [`docs/adr/`](docs/adr/).
 
 ![The AgentUX cockpit on the live ISO: two demo runs, one waiting for plan approval](docs/screenshots/cockpit-plan-approval.png)
 
@@ -68,7 +68,9 @@ There are two images, built from the same `Containerfile` ([ADR 0010](docs/adr/0
 | Image | Desktop |
 |---|---|
 | `ghcr.io/agentux-os/agentux` | KDE Plasma with the AgentUX defaults (the default) |
-| `ghcr.io/agentux-os/agentux-hyprland` | The same system plus a tiling Hyprland session, preselected at login; Plasma stays selectable |
+| `ghcr.io/agentux-os/agentux-cosmic` | The COSMIC desktop on Fedora COSMIC Atomic, lighter and with tiling built in (experimental, nightly only) |
+
+The Hyprland image, `ghcr.io/agentux-os/agentux-hyprland`, was retired after v0.5.9 ([ADR 0018](docs/adr/0018-retire-the-hyprland-variant.md)); a system on it moves to Plasma with `sudo bootc switch ghcr.io/agentux-os/agentux:stable`.
 
 To look around without installing, boot the **live ISO**: the real desktop with a demo of fake agents, and an *Install AgentUX* launcher that installs the signed image from the registry ([Try it live](https://github.com/agentux-os/agentux-os#try-it-live)).
 
@@ -76,7 +78,7 @@ Install from the ISO, or switch an existing Fedora Atomic / bootc system to eith
 
 ```sh
 sudo bootc switch ghcr.io/agentux-os/agentux:latest            # Plasma
-sudo bootc switch ghcr.io/agentux-os/agentux-hyprland:latest   # Hyprland
+sudo bootc switch ghcr.io/agentux-os/agentux-cosmic:latest     # COSMIC (nightly)
 systemctl reboot
 ```
 
@@ -110,7 +112,7 @@ Inference stays with the providers, using your own logins and API keys. No GPU r
 
 | Layer | What it is |
 |---|---|
-| OS | Fedora Atomic (Kinoite) built with bootc, x86_64 and aarch64; KDE Plasma (Wayland), or Hyprland in the second image; immutable with atomic rollback, signed images |
+| OS | Fedora Atomic (Kinoite) built with bootc, x86_64 and aarch64; KDE Plasma (Wayland), or COSMIC in the experimental second image; immutable with atomic rollback, signed images |
 | Harnesses | Each provider's CLI, driven through the Agent Client Protocol (ACP) or its headless mode |
 | `agentuxd` | Daemon: runs, worktrees, sessions, workflow state (SQLite), agent bus (MCP) |
 | Cockpit / `aux` | Unified desktop interface and its terminal twin |
@@ -139,7 +141,7 @@ Done:
 - [x] **First image:** bootable AgentUX image and ISO with harnesses, toolchain, daemon, cockpit and Plasma defaults; pinned component releases, nightly image and boot test ([agentux-os](https://github.com/agentux-os/agentux-os), [ADR 0008](docs/adr/0008-releases-and-image-pinning.md)).
 - [x] **Terminal mode:** any session opens in its vendor's TUI on the same conversation, from the cockpit or `aux attach` ([ADR 0007](docs/adr/0007-terminal-mode-is-a-session-handoff.md)).
 - [x] **Container-isolated checks:** gate checks run in rootless Podman, opt-in per project, with per-check timeouts ([ADR 0009](docs/adr/0009-container-isolation-for-checks.md), [agentux-core#13](https://github.com/agentux-os/agentux-core/pull/13)).
-- [x] **Hyprland variant:** `ghcr.io/agentux-os/agentux-hyprland`, a tiling session laid out for watching several agents ([ADR 0010](docs/adr/0010-image-variants-and-system-identity.md), [agentux-os#15](https://github.com/agentux-os/agentux-os/pull/15)).
+- [x] ~~**Hyprland variant**~~: shipped up to v0.5.9, then retired in favour of COSMIC ([ADR 0018](docs/adr/0018-retire-the-hyprland-variant.md)).
 - [x] **Signed images:** keyless and key-based cosign signatures on every published image, enforced by the container policy on installed systems ([agentux-os#9](https://github.com/agentux-os/agentux-os/pull/9)).
 - [x] **`aarch64`:** RPMs for both components, a multi-arch image and an aarch64 ISO ([agentux-os#12](https://github.com/agentux-os/agentux-os/pull/12)).
 - [x] **System identity:** the system calls itself AgentUX (os-release, KDE About) and boots with an AgentUX Plymouth splash ([ADR 0010](docs/adr/0010-image-variants-and-system-identity.md)).
@@ -150,8 +152,6 @@ Next:
 - [ ] Isolating agents' own tool calls, not only gate checks (needs its own ADR: the harness runs tools in a container while its login stays outside).
 - [ ] Signed RPMs (the images are signed; the component RPMs they install are not).
 - [ ] Boot test on arm64: the arm64 image has never been booted, since CI's arm64 runners lack KVM.
-- [ ] Boot test for the Hyprland image (today only its configuration is checked).
-- [ ] Agent status in Hyprland: runs and pending approvals from `agentuxd` in Waybar (today its AgentUX module only opens the cockpit) and as mako notifications.
 - [ ] Organization contract: versioned organization definitions, Command events and Office read models ([ADR 0015](docs/adr/0015-organization-command-office-contract.md)).
 
 ## License
