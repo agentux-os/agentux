@@ -35,7 +35,9 @@ AgentUX is a Linux distribution for developers who use coding agents from severa
 >
 > Not verified yet: full cross-vendor runs with real Claude Code, Codex and Antigravity sessions (OpenCode has been tried); booting the arm64 image on real hardware or a VM. Decisions are recorded in [`docs/adr/`](docs/adr/).
 
-![The AgentUX cockpit on the live ISO: two demo runs, one waiting for plan approval](docs/screenshots/cockpit-plan-approval.png)
+| KDE Plasma | COSMIC |
+|---|---|
+| [![The AgentUX cockpit on the Plasma live ISO: two demo runs, one waiting for plan approval](docs/screenshots/cockpit-plan-approval.png)](docs/screenshots/cockpit-plan-approval.png) | [![The AgentUX cockpit on the COSMIC live ISO, above the COSMIC dock](docs/screenshots/cockpit-cosmic.png)](docs/screenshots/cockpit-cosmic.png) |
 
 | Boot | Installer | First boot |
 |---|---|---|
