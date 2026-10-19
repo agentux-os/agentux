@@ -50,7 +50,7 @@ This repository is the project's front door: the specification, the roadmap, the
 | I want to… | Go to |
 |---|---|
 | See what AgentUX is | [agentuxos.org](https://agentuxos.org), then [Why](#why) and [How it works](#how-it-works) below |
-| Try it without installing | The live ISO: [agentux-live-x86_64.iso](https://download.agentuxos.org/iso/stable/agentux-live-x86_64.iso) ([how](https://github.com/agentux-os/agentux-os#try-it-live)) |
+| Try it without installing | The live ISO: [KDE Plasma](https://download.agentuxos.org/iso/stable/agentux-plasma-live-x86_64.iso) or [COSMIC](https://download.agentuxos.org/iso/stable/agentux-cosmic-live-x86_64.iso) ([how](https://github.com/agentux-os/agentux-os#try-it-live)) |
 | Install it | [Try it](#try-it) below, or [Install](https://github.com/agentux-os/agentux-os#install) in agentux-os; every download is on [download.agentuxos.org](https://download.agentuxos.org) |
 | Get going after the first login | [Getting started](docs/getting-started.md) |
 | Run agents from the terminal | [`aux` and `agentuxd`](https://github.com/agentux-os/agentux-core#at-a-glance) in agentux-core |
