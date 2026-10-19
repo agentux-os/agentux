@@ -29,3 +29,7 @@
 - **Keep Hyprland as a nightly-only variant** — less release work, but the build, the COPR and the tests would remain, for an image nobody promotes.
 - **Rebuild Hyprland on the COSMIC or a minimal base** — one desktop per image, but it is a new variant to build and test, while COSMIC already covers tiling.
 - **Delete the published Hyprland images** — a clean registry, but it would break `bootc rollback` and `bootc switch` for the systems still on them.
+
+## Update, 2026-10-18
+
+The same day, before anyone had installed a release, every release up to v0.5.9 was removed: the GitHub releases and `v*` tags, the `:v0.5.*` and `:stable` image tags in ghcr (Hyprland's included) and their ISOs on download.agentuxos.org. So "nothing published is deleted" no longer holds; there is no Hyprland system to keep working. v0.6.0 is the first release, with Plasma and COSMIC both released, each as a live and an offline installer ISO named `agentux-<desktop>-<live|installer>-<version>-<arch>.iso`. The signature requirement for `agentux-hyprland` stays in `policy.json`; it costs nothing and still refuses an unsigned image under that name.
