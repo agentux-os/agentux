@@ -13,30 +13,32 @@ Both images are built from the same `Containerfile`, contain the same AgentUX co
 | Image | Pick it if |
 |---|---|
 | `ghcr.io/agentux-os/agentux` | You want KDE Plasma with the AgentUX theme, panel and shortcuts. The default. |
-| `ghcr.io/agentux-os/agentux-cosmic` | You want the lighter COSMIC desktop, with tiling built in. Experimental: nightly builds only, no installer ISO yet. |
+| `ghcr.io/agentux-os/agentux-cosmic` | You want the lighter COSMIC desktop, with tiling built in. |
 
-You can move between them with `bootc switch`; your home directory is untouched. The Hyprland image (`ghcr.io/agentux-os/agentux-hyprland`) was retired after v0.5.9 ([ADR 0018](adr/0018-retire-the-hyprland-variant.md)): if your system is on it, switch to Plasma with `sudo bootc switch ghcr.io/agentux-os/agentux:stable`.
+Both are released. Switching an installed system between them with `bootc switch` is not a supported path yet: install the one you want.
 
 ### From the ISO
 
-Download the ISO from a successful run of the [Build ISO](https://github.com/agentux-os/agentux-os/actions/workflows/iso.yml) workflow: `agentux-<date>-<arch>.iso` (`<arch>` is `x86_64` for PCs, `aarch64` for 64-bit ARM). Check it and write it to a USB stick:
+Every release ships four ISOs per architecture, named `agentux-<desktop>-<live|installer>-<version>-<arch>.iso`: the desktop (`plasma` or `cosmic`), `live` to try it first (installing from it needs internet) or `installer` to install offline, and `x86_64` for PCs or `aarch64` for 64-bit ARM. The newest release is on [download.agentuxos.org/iso/stable/](https://download.agentuxos.org/iso/stable/) under the same names without the version. Check it and write it to a USB stick:
 
 ```sh
-sha256sum -c agentux-*.iso.sha256
-sudo dd if=agentux-<date>-<arch>.iso of=/dev/sdX bs=4M status=progress oflag=sync
+curl -LO https://download.agentuxos.org/iso/stable/agentux-plasma-installer-x86_64.iso
+curl -LO https://download.agentuxos.org/iso/stable/agentux-plasma-installer-x86_64.iso.sha256
+sha256sum -c agentux-plasma-installer-x86_64.iso.sha256
+sudo dd if=agentux-plasma-installer-x86_64.iso of=/dev/sdX bs=4M status=progress oflag=sync
 ```
 
-Boot it; the installer asks for the disk, language, time zone and your account.
+Boot it and follow the installer: the disk, language, time zone and your account. The x86_64 ISOs boot with UEFI or legacy BIOS.
 
 ### From an existing Fedora Atomic or bootc system
 
 ```sh
-sudo bootc switch ghcr.io/agentux-os/agentux:latest            # Plasma
-sudo bootc switch ghcr.io/agentux-os/agentux-cosmic:latest     # COSMIC (nightly)
+sudo bootc switch ghcr.io/agentux-os/agentux:stable            # Plasma
+sudo bootc switch ghcr.io/agentux-os/agentux-cosmic:stable     # COSMIC
 systemctl reboot
 ```
 
-The system then tracks that image's `:latest` and updates from it. If an update breaks something, `sudo bootc rollback` (or the previous entry in the boot menu) brings back the image you had.
+The system then tracks that image's `:stable` (releases) and updates from it; use `:latest` instead for nightly builds. If an update breaks something, `sudo bootc rollback` (or the previous entry in the boot menu) brings back the image you had.
 
 ### On ARM
 
