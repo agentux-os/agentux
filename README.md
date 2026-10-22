@@ -146,14 +146,21 @@ Done:
 - [x] **Signed images:** keyless and key-based cosign signatures on every published image, enforced by the container policy on installed systems ([agentux-os#9](https://github.com/agentux-os/agentux-os/pull/9)).
 - [x] **`aarch64`:** RPMs for both components, a multi-arch image and an aarch64 ISO ([agentux-os#12](https://github.com/agentux-os/agentux-os/pull/12)).
 - [x] **System identity:** the system calls itself AgentUX (os-release, KDE About) and boots with an AgentUX Plymouth splash ([ADR 0010](docs/adr/0010-image-variants-and-system-identity.md)).
+- [x] **Profiles and the welcome wizard:** the machine's role first (Workstation, Agent Node, Command Server, Executive, Complete), then agents, tools and Git; the cockpit opens once it is finished ([ADR 0013](docs/adr/0013-first-run-wizard.md), [ADR 0014](docs/adr/0014-installation-profiles-and-platform-services.md)).
+- [x] **Usage limits and stalled agents:** runs move to another agent or wait at a limit's reset; agents that stop responding are given up on.
+- [x] **AgentUX Command, nodes:** nodes enroll with tokens pinned to one Command server, report their agents, limits, runs and approvals, and take commands behind their own policy; the registry survives restarts ([agentux-command](https://github.com/agentux-os/agentux-command), [AUXP](https://github.com/agentux-os/agentux-protocol)).
+- [x] **AgentUX Command, operators:** capabilities per organization, service tokens, OIDC sign-in with groups mapped to capabilities; fails closed.
+- [x] **Fleets of VMs:** `aux provision` sets a machine up from a file on first boot; Command hands one out with each token.
+- [x] **Updates without reinstalling:** images staged in the background and never rebooted into by themselves; the cockpit says when one is ready ([ADR 0019](docs/adr/0019-updates-without-reinstalling.md)).
+- [x] **Organization contract accepted:** [ADR 0015](docs/adr/0015-organization-command-office-contract.md) and the [definition v1 contract](docs/contracts/organization-definition-v1.md); the Office projection and approval resolution are implemented.
 
 Next:
 
 - [ ] End-to-end validation with real harnesses: Claude Code, Codex and Antigravity sessions driven through a full run (OpenCode has been tried).
+- [ ] Organization definitions in Command: drafts, validation, publishing and immutable versions ([agentux-command#5](https://github.com/agentux-os/agentux-command/issues/5)), then missions run as workflows ([#9](https://github.com/agentux-os/agentux-command/issues/9), [ADR 0020](docs/adr/0020-command-workflows-without-temporal.md)).
 - [ ] Isolating agents' own tool calls, not only gate checks (needs its own ADR: the harness runs tools in a container while its login stays outside).
 - [ ] Signed RPMs (the images are signed; the component RPMs they install are not).
 - [ ] Boot test on arm64: the arm64 image has never been booted, since CI's arm64 runners lack KVM.
-- [ ] Organization contract: versioned organization definitions, Command events and Office read models ([ADR 0015](docs/adr/0015-organization-command-office-contract.md)).
 
 ## License
 

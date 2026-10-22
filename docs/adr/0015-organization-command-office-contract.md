@@ -1,6 +1,6 @@
 # 0015. Organization definitions are versioned domain contracts
 
-- **Status:** Proposed
+- **Status:** Accepted (2026-10-22), with the notes in [Acceptance](#acceptance)
 - **Date:** 2026-10-15
 
 ## Context
@@ -93,6 +93,52 @@ new draft and a diff; it must never rewrite a published definition.
   approval client, not the execution engine.
 - The first implementation needs schema validation, event envelopes and a
   projection contract before claiming multi-tenant production readiness.
+
+## Acceptance
+
+Accepted on 2026-10-22, after AgentUX Command's authorization, enrollment and
+Office projection were built, with these notes.
+
+**Permissions.** The vocabulary above is canonical for organization
+definitions (a role's `permissions`). AgentUX Command already authorizes
+operators per organization with these capabilities, which relate to it so:
+
+| Command capability today | In this vocabulary |
+|---|---|
+| `organization.read` | `organization.read` (and `run.read`, `artifact.read` until runs and artifacts exist in Command) |
+| `approval.decide` | `approval.decide` |
+| `node.enroll` | `node.manage` |
+| `node.command` | `run.start`, `run.pause`, `run.cancel` on a node (AUXP commands) |
+| `auth.admin` | not part of definitions: issuing and revoking operators' service tokens |
+
+As definitions land in Command (agentux-command#5), the remaining names
+(`organization.edit`, `organization.publish`, `run.read`, `artifact.read`) are
+added with the same names, a published role's permissions grant capabilities
+through the same per-organization principal, and `node.command` and
+`node.enroll` are kept as aliases of the finer names they cover.
+
+**Field names.** The names in this ADR (`event_id`, `organization_id`, …) are
+logical. On the wire, AUXP and the Office projection use camelCase
+(`eventId`, `organizationId`), as agentux-protocol's schemas do.
+
+**Workflows.** Command runs an organization's workflows as state machines in
+PostgreSQL with a transactional outbox, not on Temporal
+([ADR 0020](0020-command-workflows-without-temporal.md)).
+
+**Ownership.**
+
+| Contract | Owner | Consumers |
+|---|---|---|
+| Organization definition v1 | this repository, [`docs/contracts/organization-definition-v1.md`](../contracts/organization-definition-v1.md) | agentux-command (stores, validates, publishes, runs), agentux-apps (Office shows, the editor drafts) |
+| AUXP v1, Office projection, approval resolution | [agentux-protocol](https://github.com/agentux-os/agentux-protocol) schemas and fixtures, and its `auxp` crate | agentux-core (node gateway), agentux-command, agentux-apps |
+
+**Changes.** A change to the definition contract is a pull request here; one
+that changes a meaning also amends this ADR or replaces it. Minor versions add
+optional fields and keep meanings; a major version needs a migration that
+writes new drafts (never rewriting a published definition) and a
+compatibility window in which Command accepts both. Command and Office
+implement a change after it is merged here; agentux-protocol's schemas follow
+the same rule for AUXP (additive within v1).
 
 ## Alternatives considered
 
