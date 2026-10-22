@@ -38,7 +38,8 @@ referential-integrity validation.
     "id": "acme",
     "name": "Acme Robotics",
     "timezone": "America/Sao_Paulo",
-    "default_approval_policy": "human-required"
+    "default_approval_policy": "human-required",
+    "publication_policy": "review-required"
   },
   "areas": [
     { "id": "engineering", "name": "Engineering", "owner_role_id": "cto" }
@@ -121,6 +122,22 @@ They reference the definition version that created them:
   "content_digest": "sha256:..."
 }
 ```
+
+## Publication
+
+A definition changes as drafts. Each save of a draft is a new **revision**;
+an editor saves against the revision they read and is refused if the draft
+moved on (no silent overwrite). A **review** approves one revision or asks for
+changes; nobody reviews their own edits, and reviewing needs
+`approval.decide`. `organization.publication_policy` (optional):
+
+- `review-required`: only a revision approved by someone other than its
+  editor can be published; a later save needs a new approval.
+- absent: whoever holds `organization.publish` publishes.
+
+`default_approval_policy` is a different thing: the default for approvals
+inside runs. A rollback is a new draft from an earlier version's document,
+published like any other; published versions are never edited.
 
 ## Invariants
 
