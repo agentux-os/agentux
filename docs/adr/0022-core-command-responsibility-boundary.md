@@ -29,20 +29,22 @@ has already been implemented.
 | Node enrollment, inventory and organization mission definitions | Command | Source of truth for desired organizational state |
 | Cross-node mission lifecycle, scheduling, deadlines, retries, approvals and audit | Command | Source of truth for the organizational mission and its transitions |
 | Dispatch of work to a node and aggregation of reported results | Command | Sends capability-negotiated AUXP commands; records what each node reports |
+| Remote requests to a node: start or cancel a run, answer an approval, change agent preferences, apply a catalog or policy version | Command requests, Core decides | Command sends the request; the node's `/etc/agentux/node-policy.yaml` decides whether it runs, waits for someone at the machine to accept it, or is refused, and Core reports the outcome |
 | Worktrees, local `agentux.yaml` pipelines, harness sessions and local run state | Core on each machine | Source of truth for the local execution and its resumable state |
 | Local credentials, sandbox setup and enforcement of machine restrictions | Core on each machine | Credentials remain local; remote policy cannot relax a machine restriction |
 | Agent-to-agent coordination within a local run | Core | Uses the local agent bus and the local run's state |
 | Wire types, event envelopes, identifiers and capability negotiation | agentux-protocol (AUXP) | Shared versioned contract; neither service shares the other's database |
 
 Command must not start harness processes, own a node's worktree, or receive
-provider credentials. Core must not become the source of truth for organization
+provider credentials. Everything it asks of a node is a request that the
+node's policy may hold for local confirmation or refuse. Core must not become the source of truth for organization
 membership, cross-node mission state or operator authorization.
 
 ### Two levels of workflow
 
 An organization mission belongs to Command. It describes an organizational
 outcome, its target nodes, cross-node ordering and governance. Command owns its
-durable transitions, waits, retries and audit trail as specified by [0020].
+durable transitions, waits, retries and audit trail as specified by [0020](0020-command-workflows-without-temporal.md).
 
 A step that requires agent work is dispatched to Core on a selected node as a
 bounded local execution. Core owns that execution's worktree, harness session,
@@ -76,7 +78,7 @@ and [Command #57](https://github.com/agentux-os/agentux-command/issues/57).
 
 Core reports local execution facts over the capability-negotiated AUXP event
 contract. Events carry stable references that let Command correlate the
-organization mission, Command run, target node, Core run, session, agent and
+organization mission, mission step, target node, Core run, session, agent and
 task or step when those values apply. A consumer uses event IDs, node sequence
 cursors and the protocol's replay rules to deduplicate and resume; it must not
 infer delegation or task trees from provider-specific text.

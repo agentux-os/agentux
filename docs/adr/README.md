@@ -25,5 +25,6 @@ Each ADR records one decision: the context, what was decided, and what it costs.
 | [0020](0020-command-workflows-without-temporal.md) | AgentUX Command runs its workflows on PostgreSQL, with NATS for delivery, and is written in Rust | Accepted; amends [0014](0014-installation-profiles-and-platform-services.md) |
 | [0021](0021-tool-permission-policies.md) | Tool permission policies per project and role | Accepted |
 | [0022](0022-core-command-responsibility-boundary.md) | Core executes locally; Command orchestrates organizations | Accepted; clarifies [0003](0003-workflow-engine.md), [0015](0015-organization-command-office-contract.md), [0020](0020-command-workflows-without-temporal.md) and [0021](0021-tool-permission-policies.md) |
+| [0023](0023-agent-session-sandbox.md) | Agent sessions in a Bubblewrap sandbox | Accepted; extends [0009](0009-container-isolation-for-checks.md), within [0022](0022-core-command-responsibility-boundary.md) |
 
 New ADRs copy [`template.md`](template.md) and take the next number.
