@@ -24,5 +24,6 @@ Each ADR records one decision: the context, what was decided, and what it costs.
 | [0019](0019-updates-without-reinstalling.md) | Updates without reinstalling: small, automatic image patches, and Flatpak for new apps | Accepted; amends [0011](0011-release-channels-and-iso-distribution.md) |
 | [0020](0020-command-workflows-without-temporal.md) | AgentUX Command runs its workflows on PostgreSQL, with NATS for delivery, and is written in Rust | Accepted; amends [0014](0014-installation-profiles-and-platform-services.md) |
 | [0021](0021-tool-permission-policies.md) | Tool permission policies per project and role | Accepted |
+| [0022](0022-agent-session-sandbox.md) | Agent sessions in a Bubblewrap sandbox | Proposed; extends [0009](0009-container-isolation-for-checks.md) |
 
 New ADRs copy [`template.md`](template.md) and take the next number.
