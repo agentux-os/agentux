@@ -1,6 +1,6 @@
 # 0023. Agent sessions in a Bubblewrap sandbox
 
-- **Status:** Accepted
+- **Status:** Accepted; amended by [0024](0024-agent-sandbox-security-boundaries.md), which takes precedence where they differ
 - **Date:** 2026-11-04
 
 ## Context
