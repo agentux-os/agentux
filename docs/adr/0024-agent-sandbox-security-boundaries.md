@@ -1,6 +1,6 @@
 # 0024. Security boundaries for agent session sandboxes
 
-- **Status:** Proposed; amends [0023](0023-agent-session-sandbox.md)
+- **Status:** Accepted; amends [0023](0023-agent-session-sandbox.md)
 - **Date:** 2026-11-04
 
 ## Context
@@ -32,10 +32,10 @@ The initial credential inventory is:
 
 | Harness | Credential source to verify | Exposure | File write access |
 |---|---|---|---|
-| Claude Code | `~/.claude/.credentials.json` or `ANTHROPIC_API_KEY` | Claude access/refresh token or API key; file is writable only if refresh requires it |
-| Codex | `~/.codex/auth.json` or `OPENAI_API_KEY` | OpenAI API key or ChatGPT token; file is writable only if refresh requires it |
-| OpenCode | `~/.local/share/opencode/auth.json` or provider environment variables | Credentials for configured providers; file is writable only if refresh requires it |
-| Antigravity | Not supported until its credential path and behavior are verified | None |
+| Claude Code | `~/.claude/.credentials.json` or `ANTHROPIC_API_KEY` | Claude access/refresh token or API key | Only if refresh requires it |
+| Codex | `~/.codex/auth.json` or `OPENAI_API_KEY` | OpenAI API key or ChatGPT token | Only if refresh requires it |
+| OpenCode | `~/.local/share/opencode/auth.json` or provider environment variables | Credentials for configured providers | Only if refresh requires it |
+| Antigravity | Not supported until its credential path and behavior are verified | None | None |
 
 If a CLI needs to refresh a mounted credential file, the required write access is explicit in its harness entry and tests; the rest of its host state remains unavailable.
 
