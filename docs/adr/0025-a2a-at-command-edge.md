@@ -1,6 +1,6 @@
 # 0025. Speak A2A at AgentUX Command's edge
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-11-04
 - **Revisits:** the A2A alternative in [0004](0004-unified-interface-and-agent-bus.md); follows the ownership boundary in [0022](0022-core-command-responsibility-boundary.md) and sandbox constraints in [0024](0024-agent-sandbox-security-boundaries.md)
 
