@@ -7,11 +7,16 @@
 ## Context
 
 AgentUX needs a boundary for interoperating with independent, networked agents.
-The [A2A specification](https://a2a-protocol.org/latest/specification/)
-defines [agent cards](https://a2a-protocol.org/latest/specification/#44-agent-discovery-objects),
-[durable tasks and lifecycle states](https://a2a-protocol.org/latest/specification/#41-core-objects),
+This ADR pins the
+[A2A v1.0.1 specification](https://a2a-protocol.org/v1.0.1/specification/)
+and its [HTTP+JSON/REST binding](https://a2a-protocol.org/v1.0.1/specification/#11-httpjsonrest-protocol-binding).
+The [task interaction model](https://a2a-protocol.org/v1.0.1/topics/life-of-a-task/)
+allows `SendMessage` to return either a direct `Message` or a durable `Task`.
+The v1.0.1 specification defines
+[agent cards](https://a2a-protocol.org/v1.0.1/specification/#44-agent-discovery-objects),
+[durable tasks and lifecycle states](https://a2a-protocol.org/v1.0.1/specification/#41-core-objects),
 messages, artifact updates, streaming and push notifications. Its
-[authentication and authorization](https://a2a-protocol.org/latest/specification/#7-authentication-and-authorization)
+[authentication and authorization](https://a2a-protocol.org/v1.0.1/specification/#7-authentication-and-authorization)
 model does not define
 AgentUX organization authority or how an external task maps to an organizational
 mission and a node's local run.
@@ -43,18 +48,35 @@ This decision establishes a boundary, not a release commitment or a claim that
 the adapter is implemented. A deployment enables the adapter only when its
 operator configures it and its security controls are available.
 
+The adapter implements A2A v1.0.1 with the HTTP+JSON/REST binding. Supporting
+another specification release or binding requires an explicit compatibility
+review and an amendment to this ADR before rollout. Review version changes
+when the A2A specification publishes a new release and revisit earlier if a
+security advisory or compatibility issue affects v1.0.1. The pinned
+specification release is 1.0.1; the wire protocol version remains `1.0`, as
+required by A2A version negotiation, and the Agent Card declares protocol
+version `1.0` with protocol binding `HTTP+JSON`. Clients send
+`A2A-Version: 1.0` and do not silently fall back to another protocol version.
+
 ### Inbound requests
 
 - Command publishes an Agent Card only for explicitly enabled, published
   organization skills. The card advertises only those skills and the
   authentication methods and protocol capabilities actually supported by the
   deployment. There is no default public card or anonymous task submission.
-- A2A `SendMessage` creates a Command-owned external task associated with an
-  organization, authenticated principal, and allowed skill. Command resolves
+- For every admitted mission submission, A2A `SendMessage` returns a durable
+  `Task`, never a direct `Message`. Command authorizes the request and validates
+  its skill and inputs before admission; it then persists the external task
+  and its mission/run correlation before returning the task. Command resolves
   the skill through the published organization definition and existing
   `run.start` authorization. It creates or advances a mission/run through
   Command's normal workflow and policy checks. A2A cannot select a node,
   workflow step, tool, local path, or policy override outside that definition.
+- A denial before admission creates no A2A task and returns the corresponding
+  HTTP+JSON/REST binding error (for example, 401/403 for authentication or
+  authorization failure). Do not encode a pre-admission denial as a `rejected`
+  task, since no task exists; avoid disclosing organization or resource details
+  the caller is not authorized to see.
 - A2A task ID and context ID are external correlation identifiers, not
   Command mission or Core run IDs. Command persists the mapping. A2A task state
   is a projection of Command-owned state; it never becomes a second execution
@@ -71,6 +93,27 @@ operator configures it and its security controls are available.
   specific skill for that organization and use. Peer endpoints are
   administrator-controlled; agent-provided URLs and unrestricted discovery
   are not used to route requests.
+- Peer routing must resist DNS rebinding and server-side request forgery.
+  Accept only HTTPS peer URLs with a registered hostname and an explicitly
+  configured TLS port (443 by default). Resolve all
+  A and AAAA answers immediately before connecting, normalize IPv4-mapped
+  IPv6 addresses, reject the destination if any answer is prohibited, and pin
+  the connection to one of the validated addresses while preserving TLS
+  hostname and certificate verification against the registered hostname.
+  Repeat resolution and validation for each new connection; never let a
+  connection pool silently re-resolve to an unchecked address. Do not follow
+  redirects. Re-register and revalidate a changed peer URL instead of
+  accepting a redirect target.
+- By default, reject loopback, link-local, private, shared, reserved,
+  unspecified, multicast, broadcast, and other non-globally-routable
+  destinations, including cloud metadata endpoints. An administrator may
+  explicitly approve an internal peer by registering its exact hostname and
+  narrow private IP/CIDR range for that peer and organization. The resolved
+  address must remain within that approved range on every connection. This
+  exception never permits loopback, link-local, multicast, unspecified, or
+  cloud metadata destinations. Apply the same checks at the network egress
+  layer so a proxy, resolver, or routing change cannot bypass application
+  validation.
 - The delegation is a Command-owned mission step and external A2A task, linked
   by durable IDs. Command owns retries, deadlines, cancellation, approval and
   audit. A remote task result is evidence returned to that step, not a
@@ -116,11 +159,26 @@ operator configures it and its security controls are available.
   event semantics are available, Command must not claim detailed task
   progress: it may report only states supported by its authoritative records.
 - Map terminal outcomes only when their meanings agree: successful completion
-  to A2A `completed`, an unrecoverable failure to `failed`, and an authorized
-  cancellation to `canceled`. Waiting on a Command approval or a node decision
-  remains nonterminal. A2A messages and artifacts are recorded as bounded
-  evidence with provenance; they do not become private reasoning or raw node
-  telemetry.
+  to A2A `completed`, an unrecoverable execution error to `failed`, an
+  authorized cancellation to `canceled`, and a refusal by AgentUX or a
+  delegated peer to perform an admitted task to `rejected`. A refusal before
+  admission remains a binding error with no task. Waiting in Command's queue,
+  including a pending approval or node policy decision, remains `submitted`;
+  active execution maps to `working`.
+- The initial adapter does not expose A2A `auth-required` or `input-required`
+  states to its A2A callers and does not implement continuation flows.
+  Inbound skills must be executable from the admitted request under existing
+  authorization; if they later require caller credentials or additional
+  input, terminate that task as `rejected` with a safe explanation. For
+  outbound delegation, if a peer returns either interrupted state, do not
+  forward credentials or invent an interaction flow: mark the Command step
+  failed as unsupported interaction, preserve the remote task ID/state for
+  audit, and do not claim the peer task is terminal. An AgentUX A2A task that
+  depended on that step maps to `failed`. A future adapter may expose
+  `auth-required` or `input-required` only after defining the
+  organization-authorized continuation and credential-handling flows.
+- A2A messages and artifacts are recorded as bounded evidence with provenance;
+  they do not become private reasoning or raw node telemetry.
 
 ### Scope, privacy, limits and audit
 
@@ -157,8 +215,11 @@ control above is missing. Amend it when one of these conditions holds:
   communication, anonymous discovery, or a workflow that bypasses Command's
   organization authorization. Such a need requires a new trust-boundary
   decision; it is not permitted by this ADR.
-- A2A's stable specification or bindings change in a way that affects task
-  semantics, authentication, authorization, artifact transfer, or security.
+- Any newer A2A specification release is published. Review it before updating
+  the pinned release, even when the wire `Major.Minor` version remains `1.0`;
+  do not silently roll the implementation forward. Revisit sooner if a
+  compatibility or security issue affects v1.0.1 or the HTTP+JSON/REST
+  binding.
 - Operational evidence shows that quotas, privacy controls, audit, or
   organization-scoped identity do not adequately contain abuse or data
   exposure.
