@@ -42,7 +42,7 @@ membership, cross-node mission state or operator authorization.
 
 An organization mission belongs to Command. It describes an organizational
 outcome, its target nodes, cross-node ordering and governance. Command owns its
-durable transitions, waits, retries and audit trail as specified by [0020].
+durable transitions, waits, retries and audit trail as specified by [0020](0020-command-workflows-without-temporal.md).
 
 A step that requires agent work is dispatched to Core on a selected node as a
 bounded local execution. Core owns that execution's worktree, harness session,
