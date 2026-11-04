@@ -24,9 +24,13 @@ mission and a node's local run.
 AgentUX already has two different boundaries. Command owns organizations,
 operators, missions and cross-node audit; Core owns local runs and execution.
 The versioned [AUXP contract](https://github.com/agentux-os/agentux-protocol)
-is the Command-to-node contract and remains so. Typed execution activity,
-delegation and replay semantics are being defined in
-[agentux-protocol #12](https://github.com/agentux-os/agentux-protocol/issues/12).
+is the Command-to-node contract and remains so. The typed execution activity,
+delegation and replay schema is defined by
+[agentux-protocol #12](https://github.com/agentux-os/agentux-protocol/issues/12)
+and merged in [PR #13](https://github.com/agentux-os/agentux-protocol/pull/13).
+Core emission and Command persistence/projection remain implementation work
+tracked in [agentux-core #80](https://github.com/agentux-os/agentux-core/issues/80)
+and [agentux-command #72](https://github.com/agentux-os/agentux-command/issues/72).
 Meanwhile, the local `agentuxd` API and agent bus are machine-scoped. Exposing
 them directly as a network agent endpoint would cross both the organization
 authority boundary and the local sandbox boundary in [0024](0024-agent-sandbox-security-boundaries.md).
@@ -80,11 +84,13 @@ version `1.0` with protocol binding `HTTP+JSON`. Clients send
 - A2A task ID and context ID are external correlation identifiers, not
   Command mission or Core run IDs. Command persists the mapping. A2A task state
   is a projection of Command-owned state; it never becomes a second execution
-  state machine. `GetTask`, `CancelTask`, streaming, and push are exposed only
-  where the deployment can enforce the same principal, organization and
-  resource checks as submission. Cancellation requests go through Command's
-  `run.cancel` authorization and node policy; they do not bypass local
-  confirmation or refusal.
+  state machine. `GetTask`, `CancelTask`, and `ListTasks` enforce the same
+  principal, organization and resource checks as submission. `ListTasks` is
+  limited to the authenticated principal's authorized organization, uses
+  bounded pagination, and never accepts an organization selector that can
+  widen access. Cancellation requests go through Command's `run.cancel`
+  authorization and node policy; they do not bypass local confirmation or
+  refusal. Streaming and push are not part of the initial profile.
 
 ### Outbound delegation
 
@@ -119,6 +125,11 @@ version `1.0` with protocol binding `HTTP+JSON`. Clients send
   audit. A remote task result is evidence returned to that step, not a
   privileged command to a node. Further work on a node still requires a
   separately authorized AUXP command and the node's own policy decision.
+- A peer may answer `SendMessage` with either a Task or a direct Message. A
+  direct Message completes the bounded delegation step immediately and is
+  stored as result evidence after size and content validation; it does not
+  create a remote task or a continuation. Command never interprets the Message
+  as an instruction to a node.
 - Only an explicit, minimized task prompt and approved input artifacts cross
   the boundary. Command does not forward operator tokens, node credentials,
   harness logins, machine paths, sandbox state, or unapproved mission history.
@@ -171,10 +182,15 @@ version `1.0` with protocol binding `HTTP+JSON`. Clients send
   authorization; if they later require caller credentials or additional
   input, terminate that task as `rejected` with a safe explanation. For
   outbound delegation, if a peer returns either interrupted state, do not
-  forward credentials or invent an interaction flow: mark the Command step
-  failed as unsupported interaction, preserve the remote task ID/state for
-  audit, and do not claim the peer task is terminal. An AgentUX A2A task that
-  depended on that step maps to `failed`. A future adapter may expose
+  forward credentials or invent an interaction flow. Mark the step as
+  unsupported interaction and issue one authorized `CancelTask` request.
+  Persist the remote task as `cancel_pending` and reconcile it with bounded
+  `GetTask` checks until cancellation or another terminal state is confirmed,
+  or the configured reconciliation deadline expires. If the deadline expires
+  without confirmation, retain an operator-visible unresolved task and emit an
+  actionable alert; never mark the remote task terminal based only on local
+  failure. An AgentUX A2A task that depended on that step maps to `failed`.
+  A future adapter may expose
   `auth-required` or `input-required` only after defining the
   organization-authorized continuation and credential-handling flows.
 - A2A messages and artifacts are recorded as bounded evidence with provenance;
@@ -182,11 +198,12 @@ version `1.0` with protocol binding `HTTP+JSON`. Clients send
 
 ### Scope, privacy, limits and audit
 
-- Initial scope is task submission, task status, cancellation requests, and
-  outbound task delegation for explicitly enabled skills. Support for
-  streaming, push notifications, broad task listing, multi-turn contexts,
-  extensions, and additional bindings is opt-in per capability and deferred
-  until authorization, replay and resource ownership are specified for it.
+- Initial scope is task submission, task status, cancellation requests,
+  organization-scoped paginated `ListTasks`, and outbound task delegation for
+  explicitly enabled skills. These are the supported core operations for the
+  pinned A2A v1.0.1 profile. Streaming, push notifications, multi-turn
+  contexts, extensions, and additional bindings are excluded until
+  authorization, replay and resource ownership are specified for them.
 - Enforce per-principal and per-organization request and concurrency quotas,
   payload and artifact size limits, task deadlines, and outbound connection
   timeouts. Apply backpressure and return standard errors when limits are
@@ -208,9 +225,10 @@ version `1.0` with protocol binding `HTTP+JSON`. Clients send
 Revisit this ADR before enabling A2A on a production deployment if any required
 control above is missing. Amend it when one of these conditions holds:
 
-- Protocol #12 defines events or replay behavior that cannot express the
-  correlation and progress mapping above, or Command needs to add a new
-  AUXP-facing capability to support A2A.
+- The merged AUXP typed activity/replay contract cannot express the correlation
+  and progress mapping above, or Command needs to add a new AUXP-facing
+  capability to support A2A. The current implementation follow-ups are tracked
+  in agentux-core #80 and agentux-command #72.
 - A concrete deployment needs a Core-hosted A2A endpoint, direct node-to-agent
   communication, anonymous discovery, or a workflow that bypasses Command's
   organization authorization. Such a need requires a new trust-boundary
@@ -236,6 +254,10 @@ Apps.
   intact.
 - Command gains adapter, peer registration, identity mapping, durable task
   correlation, policy, quotas, artifact handling and audit responsibilities.
+- Command must provide core `ListTasks` semantics and bounded reconciliation
+  for outbound peers that cannot complete or cancel an interrupted task; these
+  responsibilities are tracked in
+  [agentux-command #71](https://github.com/agentux-os/agentux-command/issues/71).
 - A2A's task model does not replace Command missions or Core runs. Projection
   fidelity depends on Command's durable workflow and the event/replay contract
   in AUXP.
