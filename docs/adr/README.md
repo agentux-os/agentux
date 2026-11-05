@@ -28,5 +28,6 @@ Each ADR records one decision: the context, what was decided, and what it costs.
 | [0023](0023-agent-session-sandbox.md) | Agent sessions in a Bubblewrap sandbox | Accepted; extends [0009](0009-container-isolation-for-checks.md), within [0022](0022-core-command-responsibility-boundary.md); amended by [0024](0024-agent-sandbox-security-boundaries.md) |
 | [0024](0024-agent-sandbox-security-boundaries.md) | Security boundaries for agent session sandboxes | Accepted; amends [0023](0023-agent-session-sandbox.md) |
 | [0025](0025-a2a-at-command-edge.md) | Speak A2A at AgentUX Command's edge | Accepted; revisits the A2A alternative in [0004](0004-unified-interface-and-agent-bus.md), within [0022](0022-core-command-responsibility-boundary.md) and [0024](0024-agent-sandbox-security-boundaries.md) |
+| [0026](0026-tool-catalog-skills.md) | Tool-catalog skills are delivered per session, never into vendor directories | Accepted; within [0023](0023-agent-session-sandbox.md) and [0024](0024-agent-sandbox-security-boundaries.md) |
 
 New ADRs copy [`template.md`](template.md) and take the next number.
