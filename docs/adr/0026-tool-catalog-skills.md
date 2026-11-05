@@ -1,6 +1,6 @@
 # 0026. Tool-catalog skills are delivered per session, never into vendor directories
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-11-04
 - **Relates to:** [agentux-core#68](https://github.com/agentux-os/agentux-core/issues/68) (one tool catalog for every harness), [0002](0002-harness-integration-via-acp.md), [0007](0007-terminal-mode-is-a-session-handoff.md), [0022](0022-core-command-responsibility-boundary.md), [0023](0023-agent-session-sandbox.md) and [0024](0024-agent-sandbox-security-boundaries.md); requested in [agentux#49](https://github.com/agentux-os/agentux/issues/49)
 - **Decisions:** three questions the first draft left open were decided by a specialist review at the owner's request on 2026-11-05: locking catalog entries against replacement ([Locked entries](#locked-entries)), the delivery route for Claude Code (the claude-code row in [Delivery per session](#delivery-per-session)), and the size limits ([Validation](#catalog-format) and [Limits](#limits)).
