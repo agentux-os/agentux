@@ -37,13 +37,13 @@ AgentUX is a Linux distribution for developers who use coding agents from severa
 
 | KDE Plasma | COSMIC |
 |---|---|
-| [![The AgentUX cockpit on the Plasma live ISO: two demo runs, one waiting for plan approval](docs/screenshots/cockpit-plan-approval.png)](docs/screenshots/cockpit-plan-approval.png) | [![The AgentUX cockpit on the COSMIC live ISO, above the COSMIC dock](docs/screenshots/cockpit-cosmic.png)](docs/screenshots/cockpit-cosmic.png) |
+| [![The AgentUX cockpit on the Plasma live ISO: two demo runs, one waiting for plan approval](https://download.agentuxos.org/screenshots/stable/plasma-board.webp)](https://download.agentuxos.org/screenshots/stable/plasma-board.webp) | [![The AgentUX cockpit on the COSMIC live ISO, above the COSMIC dock](https://download.agentuxos.org/screenshots/stable/cosmic-board.webp)](https://download.agentuxos.org/screenshots/stable/cosmic-board.webp) |
 
 | Boot | Installer | First boot |
 |---|---|---|
 | [![The penguin swimming in the boot splash](docs/screenshots/boot-animation.gif)](docs/screenshots/boot-animation.gif) | [![The AgentUX installer on the live ISO](docs/screenshots/installer.png)](docs/screenshots/installer.png) | [![First-boot setup over the AgentUX wallpaper](docs/screenshots/first-boot.png)](docs/screenshots/first-boot.png) |
 
-The screenshots are captured by CI: the live ISO and installer tests boot the real images in QEMU (demo runs use fake agents). The boot animation is rendered from the Plymouth theme; the login splash plays the same scene.
+The screenshots are captured by CI: the live ISO and installer tests boot the real images in QEMU (demo runs use fake agents), and every release with ISOs publishes its cockpit shots to `download.agentuxos.org/screenshots/stable/`, so the two above follow the latest one. The boot animation is rendered from the Plymouth theme; the login splash plays the same scene.
 
 ## Start here
 
